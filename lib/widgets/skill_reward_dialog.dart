@@ -99,6 +99,33 @@ class _SkillRewardDialogState extends State<SkillRewardDialog> {
     }
   }
 
+  Widget _createSkillList(List<Skill> skills) {
+    return Expanded(
+      child: skills.isNotEmpty
+      ? SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children:
+            skills.map((skill) {
+            return GestureDetector(
+              onTap: () {
+                _insertSkillReward(skill);
+              },
+              child: Container(
+                color: _getDifficultyColor(skill.id),
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  skill.title
+                ),
+              ),
+            );
+          }).toList() 
+        ),
+      )
+      :  const Center(child: Text('No skills yet')),
+    );
+  }
+
   @override 
   void initState(){
     super.initState();
@@ -129,20 +156,7 @@ class _SkillRewardDialogState extends State<SkillRewardDialog> {
 
             const Divider(),
 
-            ...skills.map((skill) {
-              return GestureDetector(
-                onTap: () {
-                  _insertSkillReward(skill);
-                },
-                child: Container(
-                  color: _getDifficultyColor(skill.id),
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    skill.title
-                  ),
-                ),
-              );
-            }).toList(),
+            _createSkillList(skills),
 
             ElevatedButton(
               onPressed: () {
@@ -155,4 +169,6 @@ class _SkillRewardDialogState extends State<SkillRewardDialog> {
       ),
     );
   }
+
+  
 }
