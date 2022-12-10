@@ -57,13 +57,27 @@ class SkillItem extends StatelessWidget {
                 ),
               ]
             ),
+            
             const SizedBox(height: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text('Lvl. ${_skill.level}'),
-                Text(_skill.title)
-              ],
+            
+            Expanded(
+              child: Align(
+                child: Padding(
+                  padding: const EdgeInsets.all(3.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text('Lvl. ${_skill.level}'),
+                      Flexible(
+                        child: Text(
+                          _skill.title, 
+                          textAlign: TextAlign.center,
+                        )
+                      )
+                    ],
+                  ),
+                ),
+              ),
             ),
           ]
         ),
