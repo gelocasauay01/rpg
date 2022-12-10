@@ -20,11 +20,12 @@ class BadHabitItem extends StatelessWidget {
   );
 
   String _displayLastActDate() {
-    return 'Last Act: ${_badHabit.occurrences != null ? DateFormat('MMMM d, yyyy').format(_badHabit.occurrences!.last) : 'None'}';
+    return 'Last Act: ${_badHabit.occurrences != null && _badHabit.occurrences!.isNotEmpty ? DateFormat('MMMM d, yyyy').format(_badHabit.occurrences!.last) : 'None'}';
   }
 
   @override
   Widget build(BuildContext context) {
+    print(_badHabit);
     return Dismissible(
       key: Key(_badHabit.id.toString()),
       direction: DismissDirection.startToEnd,

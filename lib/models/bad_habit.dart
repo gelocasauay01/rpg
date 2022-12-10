@@ -15,9 +15,9 @@ class BadHabit {
   });
 
   BadHabit.fromJSON(Map<String, dynamic> json, { this.occurrences }) :
-    id = json['Id'],
-    title = json['Title'],
-    damage = json['Damage'];
+    id = json['Id'] as int,
+    title = json['Title'] as String,
+    damage = json['Damage'] as int;
 
   BadHabitDTO get dto {
     return BadHabitDTO(
