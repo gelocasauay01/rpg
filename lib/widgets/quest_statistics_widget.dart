@@ -98,48 +98,47 @@ class _QuestStatisticsWidgetState extends State<QuestStatisticsWidget> {
     return '$header Report';
   }
 
-  Widget getMainWidget() {
-    return Column(
-      children: [
-        NavigationHeader(
-          title: _getModeHeaderText(), 
-          onNext: () => _incrementMode(1), 
-          onPrev: () => _incrementMode(1)
-        ),
+  Widget getMainWidget() => Column(
+    children: [
+      NavigationHeader(
+        title: _getModeHeaderText(), 
+        onNext: () => _incrementMode(1), 
+        onPrev: () => _incrementMode(1)
+      ),
 
-        _showChart(),
+      _showChart(),
 
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            StatisticsItem(
-              title: 'Total Finished Quests', 
-              content: widget._questHistoryController.getFilteredQuestsCount(true).toString()
-            ),
-            StatisticsItem(
-              title: 'Total Failed Quests', 
-              content: widget._questHistoryController.getFilteredQuestsCount(false).toString()
-            )
-          ],
-        ),
-
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
           StatisticsItem(
-              title: 'Completion Rate', 
-              content: '${widget._questHistoryController.questCompletionRate.round().toString()}%'
-            ),
-            StatisticsItem(
-              title: 'Productive Week Day', 
-              content: widget._questHistoryController.mostProductiveWeekDay
-            )
-          ],
-        ),
+            title: 'Total Finished Quests', 
+            content: widget._questHistoryController.getFilteredQuestsCount(true).toString()
+          ),
+          StatisticsItem(
+            title: 'Total Failed Quests', 
+            content: widget._questHistoryController.getFilteredQuestsCount(false).toString()
+          )
+        ],
+      ),
 
-      ],
-    );
-  }
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+        StatisticsItem(
+            title: 'Completion Rate', 
+            content: '${widget._questHistoryController.questCompletionRate.round().toString()}%'
+          ),
+          StatisticsItem(
+            title: 'Productive Week Day', 
+            content: widget._questHistoryController.mostProductiveWeekDay
+          )
+        ],
+      ),
+
+    ],
+  );
+  
   
   @override
   void dispose() {
@@ -148,22 +147,21 @@ class _QuestStatisticsWidgetState extends State<QuestStatisticsWidget> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: widget._questHistoryController.initializeQuestHistory(),
-      builder: (context, snapshot) {
-        Widget returnedWidget = const Center(child: CircularProgressIndicator());
+  Widget build(BuildContext context) => FutureBuilder(
+    future: widget._questHistoryController.initializeQuestHistory(),
+    builder: (context, snapshot) {
+      Widget returnedWidget = const Center(child: CircularProgressIndicator());
 
-        if(snapshot.connectionState == ConnectionState.done && !widget._questHistoryController.isEmpty) {
-          returnedWidget = getMainWidget();
-        }
-
-        else if (snapshot.connectionState == ConnectionState.done && widget._questHistoryController.isEmpty) {
-          returnedWidget = const Center(child: Text('No quest history data yet!'));
-        }
-
-        return returnedWidget;
+      if(snapshot.connectionState == ConnectionState.done && !widget._questHistoryController.isEmpty) {
+        returnedWidget = getMainWidget();
       }
-    );
-  }
+
+      else if (snapshot.connectionState == ConnectionState.done && widget._questHistoryController.isEmpty) {
+        returnedWidget = const Center(child: Text('No quest history data yet!'));
+      }
+
+      return returnedWidget;
+    }
+  );
+
 }

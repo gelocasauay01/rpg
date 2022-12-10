@@ -34,44 +34,43 @@ class _GameScreenState extends State<GameScreen>{
     },
     {
       "name": page_enum.Page.statistics.name, 
-      "icon": const Icon(Icons.data_exploration)
+      "icon": const Icon(Icons.bar_chart)
     },
     {
       "name": page_enum.Page.quests.name,
-      "icon": const Icon(Icons.task)
+      "icon": const Icon(Icons.task_alt)
     },
     {
       "name": page_enum.Page.shop.name,
-      "icon": const Icon(Icons.shop)
+      "icon": const Icon(Icons.store)
     },
   ];
   
   @override
-  Widget build(BuildContext context){
-    return Scaffold(
-      body: Container(
-        color: Theme.of(context).primaryColor,
-        child: Column(
-          children: [
-            Consumer<ProfileController>(builder: (context, value, child) => CharacterHeader(profile: value.profile!)),
-            if (currentPage == page_enum.Page.quests) const QuestScreen()
-            else if (currentPage == page_enum.Page.profile) const ProfileScreen()
-            else if (currentPage == page_enum.Page.shop) const ShopScreen()
-            else if(currentPage == page_enum.Page.statistics) const StatisticsScreen()
-          ]
-        ),
+  Widget build(BuildContext context) => Scaffold(
+    body: Container(
+      color: Theme.of(context).primaryColor,
+      child: Column(
+        children: [
+          Consumer<ProfileController>(builder: (context, value, child) => CharacterHeader(profile: value.profile!)),
+          if (currentPage == page_enum.Page.quests) const QuestScreen()
+          else if (currentPage == page_enum.Page.profile) const ProfileScreen()
+          else if (currentPage == page_enum.Page.shop) const ShopScreen()
+          else if(currentPage == page_enum.Page.statistics) const StatisticsScreen()
+        ]
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: currentPage.index,
-        onTap: ((index) => setState(() {
-          currentPage = page_enum.Page.values[index];
-        })),
-        items: pages.map((page) => BottomNavigationBarItem(
-          backgroundColor: Theme.of(context).primaryColor,
-          icon: page["icon"],
-          label: StringUtils.toSentenceCase(page["name"]) 
-        )).toList()
-      ),
-    );
-  }
+    ),
+    bottomNavigationBar: BottomNavigationBar(
+      currentIndex: currentPage.index,
+      onTap: ((index) => setState(() {
+        currentPage = page_enum.Page.values[index];
+      })),
+      items: pages.map((page) => BottomNavigationBarItem(
+        backgroundColor: Theme.of(context).primaryColor,
+        icon: page["icon"],
+        label: StringUtils.toSentenceCase(page["name"]) 
+      )).toList()
+    ),
+  );
+  
 }

@@ -90,22 +90,21 @@ class _IndividualStatisticState extends State<IndividualSkillStatistic> {
   }
 
   @override 
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: _skillUsageController!.initializeSkillUsage(),
-      builder: (context, snapshot) {
-        Widget widget = const Center(child: CircularProgressIndicator());
+  Widget build(BuildContext context) => FutureBuilder(
+    future: _skillUsageController!.initializeSkillUsage(),
+    builder: (context, snapshot) {
+      Widget widget = const Center(child: CircularProgressIndicator());
 
-        if(snapshot.connectionState == ConnectionState.done && !_skillUsageController!.isEmpty) {
-          widget = getMainWidget();
-        }
-
-        else if(snapshot.connectionState == ConnectionState.done && _skillUsageController!.isEmpty) {
-          widget = const Center(child: Text('No skill usage data yet'));
-        }
-
-        return widget;
+      if(snapshot.connectionState == ConnectionState.done && !_skillUsageController!.isEmpty) {
+        widget = getMainWidget();
       }
-    );
-  }
+
+      else if(snapshot.connectionState == ConnectionState.done && _skillUsageController!.isEmpty) {
+        widget = const Center(child: Text('No skill usage data yet'));
+      }
+
+      return widget;
+    }
+  );
+  
 }

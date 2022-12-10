@@ -47,21 +47,21 @@ class MainScreen extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: initializeGame(context),
-      builder: (context, snapshot) {
-        Widget widget = const Scaffold(body: Center(child: CircularProgressIndicator()));
+  Widget build(BuildContext context) => FutureBuilder(
+    future: initializeGame(context),
+    builder: (context, snapshot) {
+      Widget widget = const Scaffold(body: Center(child: CircularProgressIndicator()));
 
-        if(snapshot.connectionState == ConnectionState.done && snapshot.data!){
-          widget = const GameScreen();
-        }
+      if(snapshot.connectionState == ConnectionState.done && snapshot.data!){
+        widget = const GameScreen();
+      }
 
-        if(snapshot.connectionState == ConnectionState.done && !snapshot.data!){
-          widget = const EditProfileScreen(false);
-        }
+      if(snapshot.connectionState == ConnectionState.done && !snapshot.data!){
+        widget = const EditProfileScreen(false);
+      }
 
-        return widget;
-      });
-  }
+      return widget;
+    }
+  );
+  
 }

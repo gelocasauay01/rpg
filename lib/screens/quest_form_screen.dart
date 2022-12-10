@@ -29,11 +29,12 @@ class _QuestFormScreenState extends State<QuestFormScreen> {
   final List<Widget> _subtaskFields = [];
   final GlobalKey<FormState> _formState = GlobalKey<FormState>();
   final TextEditingController _titleController = TextEditingController();
+
   int? _questId;
   QuestDTO _questDTO = QuestDTO();
   bool _isInit = false;
 
-  Future _saveQuest() async {
+  Future<void> _saveQuest() async {
 
     if(!_formState.currentState!.validate()) {
       return;
@@ -113,47 +114,13 @@ class _QuestFormScreenState extends State<QuestFormScreen> {
   }
 
   void _addSubtaskField({String initialValue = ''}) { 
-    ValueKey widgetId = ValueKey(DateTime.now());
-    setState(() {
-      _subtaskFields.add(
-        Row(
-          key: widgetId,
-          children: [
-            Expanded(
-              child: TextFormField(
-                initialValue: initialValue,
-                validator: _validateSubtask,
-                onSaved: (subtask) {
-                  _addSubtask(subtask as String);
-                },
-              )
-            ),
-            TextButton(
-              onPressed: (){
-                setState(() {
-                  _subtaskFields.removeWhere((subtaskField) => subtaskField.key == widgetId);
-                });
-              }, 
-              child: const Text('x')
-            )
-          ],
-        ));
-      }
-    );
+    ValueKey<DateTime> widgetId = ValueKey<DateTime>(DateTime.now());
+    setState(() =>_subtaskFields.add(_createSubtaskField(widgetId, initialValue)));
   }
 
   Color _getDifficultyColor (Difficulty difficulty) {
-    Color difficultyColor = Colors.green;
-
-    if(difficulty == Difficulty.normal) {
-      difficultyColor = Colors.yellow;
-    }
-
-    else if(difficulty == Difficulty.hard) {
-      difficultyColor = Colors.red;
-    }
-
-    return difficultyColor;
+    const List<Color> difficultyColor = [Colors.green, Colors.yellow, Colors.red];
+    return difficultyColor[difficulty.index];
   }
 
   Future<void> _pickDeadline() async{
@@ -192,27 +159,76 @@ class _QuestFormScreenState extends State<QuestFormScreen> {
     }
   }
 
+  Future<void> _showSkillRewardDialog() async {
+     _questDTO.skillRewards = await showDialog(
+      context: context, 
+      builder: (context) => SkillRewardDialog(_questDTO.skillRewards)
+    );
+    setState(() {});
+  }
+
+  Widget _createSubtaskField(ValueKey<DateTime> widgetId, String initialValue) => Row(
+    key: widgetId,
+    children: [
+      Expanded(
+        child: TextFormField(
+          initialValue: initialValue,
+          validator: _validateSubtask,
+          onSaved: (subtask) {
+            _addSubtask(subtask as String);
+          },
+        )
+      ),
+      IconButton(
+        icon: const Icon(Icons.close),
+        onPressed: (){
+          setState(() {
+            _subtaskFields.removeWhere((subtaskField) => subtaskField.key == widgetId);
+          });
+        }, 
+      )
+    ],
+  );
+
+  Widget _displayChosenSkillRewards() => Wrap(
+    children: _questDTO.skillRewards!.map((skillReward) {
+      return Container(
+        padding: const EdgeInsets.all(8.0),
+        margin: const EdgeInsets.symmetric(horizontal: 3.0),
+        decoration: BoxDecoration(
+          color: _getDifficultyColor(skillReward.difficulty),
+          borderRadius: BorderRadius.circular(8.0)
+        ),
+        child: Text(Provider.of<SkillController>(context, listen: false).getSkillById(skillReward.skillId).title),
+      );
+    }).toList(),
+  );
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+
     if(!_isInit && ModalRoute.of(context) != null) {
       _questId = ModalRoute.of(context)!.settings.arguments as int?;
-      if(_questId != null) {
-        Provider.of<QuestController>(context, listen: false).getQuestById(_questId!).then((quest) {
-          _questDTO = quest!.dto;
-          //Initialize subtask fields when it exists in edit mode
-          if(_questDTO.subtasks != null && _questDTO.subtasks!.isNotEmpty) {
-            for(Subtask subtask in _questDTO.subtasks!) {
-              _addSubtaskField(initialValue: subtask.title);
-            }
-          }
-          setState(() {
-            _titleController.text = _questDTO.title!;
-          });
-        });
-      }
-      _isInit = true;
     }
+
+    if(!_isInit && _questId != null) {
+      Provider.of<QuestController>(context, listen: false).getQuestById(_questId!).then((quest) {
+        _questDTO = quest!.dto;
+        //Initialize subtask fields when it exists in edit mode
+        if(_questDTO.subtasks != null && _questDTO.subtasks!.isNotEmpty) {
+          for(Subtask subtask in _questDTO.subtasks!) {
+            _addSubtaskField(initialValue: subtask.title);
+          }
+          _questDTO.subtasks = null;
+        }
+        setState(() {
+          _titleController.text = _questDTO.title!;
+        });
+      });
+    }
+
+    _isInit = true;
   }
 
   @override
@@ -222,114 +238,97 @@ class _QuestFormScreenState extends State<QuestFormScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(_questId != null ? 'Edit Quest' : 'Add Quest'),
-      ),
-      body: SingleChildScrollView(
-        child: Form(
-          key: _formState,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Row(
-                  children: [
-                    const Text('Title: '),
-                    Expanded(
-                      child: TextFormField(
-                        controller: _titleController,
-                        validator: _validateTitle,
-                        onSaved: (title) {
-                          _questDTO.title = title;
-                        },
-                      )
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text('Deadline: '),
-                    if(_questDTO.deadline != null)
-                      Text(DateFormat('MMMM d, yyyy').format(_questDTO.deadline!)),
-                    ElevatedButton(
-                      onPressed: () async {
-                        PermissionStatus status = await Permission.notification.status;
-
-                        if(status.isDenied){
-                          status = await Permission.notification.request();
-                        }
-
-                        if(status.isGranted) {
-                          _pickDeadline();
-                        }
-
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(
+      title: Text(_questId != null ? 'Edit Quest' : 'Add Quest'),
+    ),
+    body: SingleChildScrollView(
+      child: Form(
+        key: _formState,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  const Text('Title: '),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _titleController,
+                      validator: _validateTitle,
+                      onSaved: (title) {
+                        _questDTO.title = title;
                       },
-                      child: const Text('Choose Date')
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text('Subtask: '),
-                    ElevatedButton(
-                      onPressed: _addSubtaskField,
-                      child: const Text('+ Add Subtask')
-                    ),
-                  ],
+                    )
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Deadline: '),
+                  if(_questDTO.deadline != null)
+                    Text(DateFormat('MMMM d, yyyy').format(_questDTO.deadline!)),
+                  ElevatedButton(
+                    onPressed: () async {
+                      PermissionStatus status = await Permission.notification.status;
+
+                      if(status.isDenied){
+                        status = await Permission.notification.request();
+                      }
+
+                      if(status.isGranted) {
+                        _pickDeadline();
+                      }
+
+                    },
+                    child: const Text('Choose Date')
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Subtask: '),
+                  ElevatedButton(
+                    onPressed: _addSubtaskField,
+                    child: const Text('+ Add Subtask')
+                  ),
+                ],
+              ),
+
+              if(_subtaskFields.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+                  child: Column(children: _subtaskFields),
                 ),
 
-                if(_subtaskFields.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
-                    child: Column(children: _subtaskFields),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Skill Reward: '),
+                  ElevatedButton(
+                    onPressed:  _showSkillRewardDialog,
+                    child: const Text('+ Add Skill Reward')
                   ),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text('Skill Reward: '),
-                    ElevatedButton(
-                      onPressed: () async {
-                        _questDTO.skillRewards = await showDialog(
-                          context: context, 
-                          builder: (context) => SkillRewardDialog(_questDTO.skillRewards)
-                        );
-                        setState(() {});
-                      },
-                      child: const Text('+ Add Skill Reward')
-                    ),
-                  ],
-                ),
-                
-                if(_questDTO.skillRewards != null && _questDTO.skillRewards!.isNotEmpty) 
-                  Wrap(
-                    children: _questDTO.skillRewards!.map((skillReward) {
-                      return Container(
-                        padding: const EdgeInsets.all(8.0),
-                        margin: const EdgeInsets.symmetric(horizontal: 3.0),
-                        decoration: BoxDecoration(
-                          color: _getDifficultyColor(skillReward.difficulty),
-                          borderRadius: BorderRadius.circular(8.0)
-                        ),
-                        child: Text(Provider.of<SkillController>(context, listen: false).getSkillById(skillReward.skillId).title),
-                      );
-                    }).toList(),
-                  ),
-                
-                ElevatedButton(
-                  onPressed: () => _saveQuest(),
-                  child: Text(_questId != null ? 'Update' : 'Save')
-                )
-              ],
-            ),
+                ],
+              ),
+              
+              if(_questDTO.skillRewards != null && _questDTO.skillRewards!.isNotEmpty) 
+                _displayChosenSkillRewards(),
+              
+              ElevatedButton(
+                onPressed: _saveQuest,
+                child: Text(_questId != null ? 'Update' : 'Save')
+              )
+            ],
           ),
-        )
-      ),
-    );
-  }
+        ),
+      )
+    ),
+  );
+
+  
+  
 }

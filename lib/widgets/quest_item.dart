@@ -69,27 +69,34 @@ class _QuestItemState extends State<QuestItem> {
 
   Future<void> _deleteQuest() async {
     QuestController questController = Provider.of<QuestController>(context, listen: false);
+    QuestHistoryController questHistoryController = Provider.of<QuestHistoryController>(context, listen: false);
 
     if(widget._quest.deadline != null) {
       await NotificationController.instance.cancelNotification(widget._quest.id);
     }
 
+    await questHistoryController.addQuestHistory(isFinished: false, difficulty: widget._quest.difficulty);
     await questController.deleteQuest(widget._quest.id);
   }
 
-  Future<bool?> _showConfirmDialog(BuildContext context) async {
-    return await showDialog(
-      context: context, 
-      builder: (context) => AlertDialog(
-        icon: const Icon(Icons.warning),
-        title: const Text('Confirm Finish'),
-        content: const Text('Are you sure you finished this quest?'),
-        actions: [
-          ElevatedButton(onPressed: () => Navigator.of(context).pop(true), child: const Text('Ok')),
-          ElevatedButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Cancel'))
-        ],
-      )
-    );
+  Future<bool?> _showConfirmDialog() async => await showDialog(
+    context: context, 
+    builder: (context) => AlertDialog(
+      icon: const Icon(Icons.warning),
+      title: const Text('Confirm Finish'),
+      content: const Text('Are you sure you finished this quest?'),
+      actions: [
+        ElevatedButton(onPressed: () => Navigator.of(context).pop(true), child: const Text('Ok')),
+        ElevatedButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Cancel'))
+      ],
+    )
+  );
+  
+  Future<void> _triggerFinishQuest() async {
+    bool? isFinished = await _showConfirmDialog();
+    if(isFinished != null && isFinished) {
+      _finishQuest();
+    }
   }
 
   void toggleSubtask(bool value, Subtask subtask) {
@@ -102,75 +109,72 @@ class _QuestItemState extends State<QuestItem> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Dismissible(
-      key: Key(widget._quest.id.toString()),
-      onDismissed: (direction) async => await _deleteQuest(),
-      direction: DismissDirection.startToEnd,
-      background: Container(
-        padding: const EdgeInsets.only(left: 10.0),
-        color: Theme.of(context).errorColor,
-        child: const Align(
-          alignment: Alignment.centerLeft,
-          child: Icon(Icons.delete)
-        )
-      ),
-      child: Container(
-        margin: const EdgeInsets.all(8.0),
-        padding: const EdgeInsets.all(8.0),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(30),
-          border: Border.all(color: Colors.black)
-        ),
-        child: Column(
+  Widget _displaySubtasks() => Padding(
+    padding: const EdgeInsets.all(8.0),
+    child: Column(
+      children: widget._quest.subtasks!.map((subtask) => GestureDetector(
+        onTap: () {
+          toggleSubtask(!subtask.isDone, subtask);
+        },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            ListTile(
-              onTap: () => Navigator.of(context).pushNamed(QuestFormScreen.routeName, arguments: widget._quest.id),
-              leading: Image.asset(_getDifficultyImagePath()),
-              title: Text(widget._quest.title),
-              subtitle: widget._quest.deadline != null ? Text(DateFormat('MMMM d, yyyy').format(widget._quest.deadline!)) : null,
-              trailing: widget._quest.subtasks != null 
-              ? _isExtend 
-                ? IconButton(onPressed: () => setState(() => _isExtend = false), icon: const Icon(Icons.arrow_upward)) 
-                : IconButton(onPressed: () => setState(() => _isExtend = true), icon: const Icon(Icons.arrow_downward))
-              : IconButton(onPressed: () {
-                 _showConfirmDialog(context)
-                  .then((isConfirmed) {
-                    if(isConfirmed != null && isConfirmed) {
-                      _finishQuest();
-                    }
-                  } 
-                 );
-              }, icon: const Icon(Icons.check))
-            ),
-    
-            if(widget._quest.subtasks != null && _isExtend) Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: widget._quest.subtasks!.map((subtask) => GestureDetector(
-                  onTap: () {
-                    toggleSubtask(!subtask.isDone, subtask);
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(subtask.title),
-                      Checkbox(
-                        value: subtask.isDone, 
-                        onChanged: (value) {
-                          if(value != null) {
-                            toggleSubtask(value, subtask);
-                          }
-                        }
-                      )
-                  ],),
-                )).toList(),
-              ),
+            Text(subtask.title),
+            Checkbox(
+              value: subtask.isDone, 
+              onChanged: (value) {
+                if(value != null) {
+                  toggleSubtask(value, subtask);
+                }
+              }
             )
-          ],
-        ),
+        ],),
+      )).toList(),
+    ),
+  );
+
+  Widget _createTrailingButton() => widget._quest.subtasks != null 
+    ? _isExtend 
+      ? IconButton(onPressed: () => setState(() => _isExtend = false), icon: const Icon(Icons.arrow_upward)) 
+      : IconButton(onPressed: () => setState(() => _isExtend = true), icon: const Icon(Icons.arrow_downward))
+    : IconButton(onPressed: _triggerFinishQuest, icon: const Icon(Icons.check));
+
+  @override
+  Widget build(BuildContext context) => Dismissible(
+    key: Key(widget._quest.id.toString()),
+    onDismissed: (direction) async => await _deleteQuest(),
+    direction: DismissDirection.startToEnd,
+    background: Container(
+      padding: const EdgeInsets.only(left: 10.0),
+      color: Theme.of(context).errorColor,
+      child: const Align(
+        alignment: Alignment.centerLeft,
+        child: Icon(Icons.delete)
+      )
+    ),
+    child: Container(
+      margin: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(8.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(color: Colors.black)
       ),
-    );
-  }
+      child: Column(
+        children: [
+          ListTile(
+            onTap: () => Navigator.of(context).pushNamed(QuestFormScreen.routeName, arguments: widget._quest.id),
+            leading: Image.asset(_getDifficultyImagePath()),
+            title: Text(widget._quest.title),
+            subtitle: widget._quest.deadline != null ? Text(DateFormat('MMMM d, yyyy').format(widget._quest.deadline!)) : null,
+            trailing: _createTrailingButton()
+          ),
+
+          if(widget._quest.subtasks != null && _isExtend) 
+            _displaySubtasks()
+
+        ],
+      ),
+    ),
+  );
+  
 }

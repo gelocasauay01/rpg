@@ -57,43 +57,42 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: ClipRRect(
-        borderRadius: const BorderRadius.only(topLeft: Radius.circular(40), topRight: Radius.circular(40)),
-        child: Container(
-          color: Theme.of(context).cardColor,
-          child: Padding(
-            padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                CircularNav(
-                  navItems: [
-                    NavItem(
-                      value: StatisticsMode.quests, 
-                      title: 'Quest', 
-                      onClick: () => _switchMode(StatisticsMode.quests)
-                    ),
-                    NavItem(
-                      value: StatisticsMode.badHabits, 
-                      title: 'Bad Habit', 
-                      onClick: () => _switchMode(StatisticsMode.badHabits)
-                    ),
-                    NavItem(
-                      value: StatisticsMode.skills, 
-                      title: 'Skill', 
-                      onClick: () => _switchMode(StatisticsMode.skills)
-                    )
-                  ],
-                  currentValue: _currentMode,
-                ),
-                Expanded(child: _showCurrentWidget()),
-              ],
-            ),
-          )
-        ),
+  Widget build(BuildContext context) => Expanded(
+    child: ClipRRect(
+      borderRadius: const BorderRadius.only(topLeft: Radius.circular(40), topRight: Radius.circular(40)),
+      child: Container(
+        color: Theme.of(context).cardColor,
+        child: Padding(
+          padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              CircularNav(
+                navItems: [
+                  NavItem(
+                    value: StatisticsMode.quests, 
+                    title: 'Quest', 
+                    onClick: () => _switchMode(StatisticsMode.quests)
+                  ),
+                  NavItem(
+                    value: StatisticsMode.badHabits, 
+                    title: 'Bad Habit', 
+                    onClick: () => _switchMode(StatisticsMode.badHabits)
+                  ),
+                  NavItem(
+                    value: StatisticsMode.skills, 
+                    title: 'Skill', 
+                    onClick: () => _switchMode(StatisticsMode.skills)
+                  )
+                ],
+                currentValue: _currentMode,
+              ),
+              Expanded(child: _showCurrentWidget()),
+            ],
+          ),
+        )
       ),
-    );
-  }
+    ),
+  );
+  
 }

@@ -11,21 +11,19 @@ class StatisticsItem extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(8.0),
-      child: Column(
-        children: [
-        Text(title),
-        Text(
-          content,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 20
-          ),
+  Widget build(BuildContext context) => Container(
+    margin: const EdgeInsets.all(8.0),
+    child: Column(
+      children: [
+      Text(title),
+      Text(
+        content,
+        style: const TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 20
         ),
-        ],
       ),
-    );
-  }
+      ],
+    ),
+  );
 }

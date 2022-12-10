@@ -93,58 +93,57 @@ class _QuestScreenState extends State<QuestScreen> {
   );
   
   @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: ClipRRect(
-        borderRadius: const BorderRadius.only(topLeft: Radius.circular(40), topRight: Radius.circular(40)),
-        child: Container(
-          color: Theme.of(context).cardColor,
-          child: Padding(
-            padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                CircularNav(
-                  navItems: [
-                    NavItem(
-                      value: QuestMode.quest, 
-                      title: 'Quest', 
-                      onClick: () => _switchMode(QuestMode.quest)
-                    ),
-                    NavItem(
-                      value: QuestMode.badHabit, 
-                      title: 'Bad Habit', 
-                      onClick: () => _switchMode(QuestMode.badHabit)
-                    ),
-                  ],
-                  currentValue: _currentMode,
-                ),
-                Expanded(
-                  child: Stack(
-                    children: [
-                      
-                      _currentMode == QuestMode.quest 
-                        ? _showQuestList()
-                        : _showBadHabitsList(),
-    
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 0),
-                        child: Align(
-                          alignment: Alignment.bottomRight,
-                          child: FloatingActionButton(
-                            onPressed: () => _showQuestOrBadHabitForm(),
-                            child: const Icon(Icons.add),
-                          ),
+  Widget build(BuildContext context) => Expanded(
+    child: ClipRRect(
+      borderRadius: const BorderRadius.only(topLeft: Radius.circular(40), topRight: Radius.circular(40)),
+      child: Container(
+        color: Theme.of(context).cardColor,
+        child: Padding(
+          padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              CircularNav(
+                navItems: [
+                  NavItem(
+                    value: QuestMode.quest, 
+                    title: 'Quest', 
+                    onClick: () => _switchMode(QuestMode.quest)
+                  ),
+                  NavItem(
+                    value: QuestMode.badHabit, 
+                    title: 'Bad Habit', 
+                    onClick: () => _switchMode(QuestMode.badHabit)
+                  ),
+                ],
+                currentValue: _currentMode,
+              ),
+              Expanded(
+                child: Stack(
+                  children: [
+                    
+                    _currentMode == QuestMode.quest 
+                      ? _showQuestList()
+                      : _showBadHabitsList(),
+  
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 0),
+                      child: Align(
+                        alignment: Alignment.bottomRight,
+                        child: FloatingActionButton(
+                          onPressed: () => _showQuestOrBadHabitForm(),
+                          child: const Icon(Icons.add),
                         ),
-                      )
-                    ],
-                  )
-                ),
-              ],
-            ),
-          )
-        ),
+                      ),
+                    )
+                  ],
+                )
+              ),
+            ],
+          ),
+        )
       ),
-    );
-  }
+    ),
+  );
+  
 }

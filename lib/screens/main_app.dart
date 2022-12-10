@@ -14,17 +14,16 @@ class MainApp extends StatelessWidget {
   const MainApp({ super.key });
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'RPG To-do List',
-      theme: Provider.of<SkinController>(context).themeData,
-      home: const MainScreen(),
-      routes: {
-        EditProfileScreen.routeName: (context) => const EditProfileScreen(true),
-        MainScreen.routeName:(context) => const MainScreen(),
-        QuestFormScreen.routeName: (context) => const QuestFormScreen()
-      },
-      debugShowCheckedModeBanner: false,
-    );
-  }
+  Widget build(BuildContext context) => MaterialApp(
+    title: 'RPG To-do List',
+    theme: Provider.of<SkinController>(context).themeData,
+    home: const MainScreen(),
+    routes: {
+      EditProfileScreen.routeName: (context) => const EditProfileScreen(true),
+      MainScreen.routeName:(context) => const MainScreen(),
+      QuestFormScreen.routeName: (context) => const QuestFormScreen()
+    },
+    debugShowCheckedModeBanner: false,
+  );
+  
 }

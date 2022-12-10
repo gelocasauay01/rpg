@@ -40,34 +40,27 @@ class _SkillRewardDialogState extends State<SkillRewardDialog> {
     return difficulty;
   }
 
-  Color _getDifficultyColor (int skillId, {Color defaultColor = Colors.white}) {
+  Color _getDifficultyColor (int skillId, { Color defaultColor = Colors.white }) {
+    const List<Color> colors = [Colors.green, Colors.yellow, Colors.red];
     Difficulty? difficulty = _getSkillDifficulty(skillId);
-    Color difficultyColor = defaultColor;
-    if(difficulty == Difficulty.easy) {
-      difficultyColor = Colors.green;
-    }
-
-    else if(difficulty == Difficulty.normal) {
-      difficultyColor = Colors.yellow;
-    }
-
-    else if(difficulty == Difficulty.hard) {
-      difficultyColor = Colors.red;
-    }
+    Color difficultyColor = difficulty != null ? colors[difficulty.index] : defaultColor;
     return difficultyColor;
   }
 
   void _insertSkillReward(Skill skill) {
+
     // Immediately put the skill reward when list is null
-    if(skillRewards == null ) {
+    if(skillRewards == null) {
       setState(() {
         skillRewards = [SkillReward(skillId: skill.id, difficulty: Difficulty.easy)];
       });
       return;
     }
 
+    const int notFoundFromArray = -1;
     int index = skillRewards!.indexWhere((skillReward) => skillReward.skillId == skill.id);
-    if(index != -1) {
+
+    if(index != notFoundFromArray) {
       Difficulty currentDifficulty = skillRewards![index].difficulty; 
       int nextDifficulty = currentDifficulty.index + 1;
 
@@ -99,32 +92,31 @@ class _SkillRewardDialogState extends State<SkillRewardDialog> {
     }
   }
 
-  Widget _createSkillList(List<Skill> skills) {
-    return Expanded(
-      child: skills.isNotEmpty
-      ? SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children:
-            skills.map((skill) {
-            return GestureDetector(
-              onTap: () {
-                _insertSkillReward(skill);
-              },
-              child: Container(
-                color: _getDifficultyColor(skill.id),
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  skill.title
-                ),
+  Widget _createSkillList(List<Skill> skills) => Expanded(
+    child: skills.isNotEmpty
+    ? SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children:
+          skills.map((skill) {
+          return GestureDetector(
+            onTap: () {
+              _insertSkillReward(skill);
+            },
+            child: Container(
+              color: _getDifficultyColor(skill.id),
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                skill.title
               ),
-            );
-          }).toList() 
-        ),
-      )
-      : const Center(child: Text('No skills yet')),
-    );
-  }
+            ),
+          );
+        }).toList() 
+      ),
+    )
+    : const Center(child: Text('No skills yet')),
+  );
+
 
   @override 
   void initState(){
@@ -147,9 +139,9 @@ class _SkillRewardDialogState extends State<SkillRewardDialog> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text('Choose Skill'),
-                TextButton(
+                IconButton(
+                  icon: const Icon(Icons.close),
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('x')
                 ), 
               ],
             ),

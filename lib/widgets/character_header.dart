@@ -17,6 +17,37 @@ class CharacterHeader extends StatelessWidget {
     super.key
   });
 
+  Widget _displayGoldAmount() => Row(
+    children: [
+      SizedBox(
+        height: 16,
+        child: Image.asset(
+          "assets/images/coin.png",
+          fit: BoxFit.cover,
+        )
+      ),
+      Text(profile.goldValue.toString())
+    ],
+  );
+
+  Widget _displayHealthBar(BuildContext context) {
+    const double lowHealthPercent = 0.3;
+    double healthPercent = profile.healthValue / profile.maxHealth;
+    ThemeData themeData = Theme.of(context);
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(30.0),
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 3, horizontal: 0),
+        height: 20,
+        child: LinearProgressIndicator(
+          backgroundColor: themeData.backgroundColor,
+          color: healthPercent > lowHealthPercent ? themeData.highlightColor : themeData.errorColor,
+          value: healthPercent,
+        ),
+      ),
+    );
+  } 
+
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
@@ -47,29 +78,11 @@ class CharacterHeader extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(profile.name),
-                      Row(children: [
-                          SizedBox(
-                            height: 16,
-                            child: Image.asset(
-                              "assets/images/coin.png",
-                              fit: BoxFit.cover,
-                            )
-                          ),
-                          Text(profile.goldValue.toString())
-                        ],
-                      ),
-                      ]
-                    ),
-                    Container(
-                      margin: const EdgeInsets.symmetric(vertical: 3, horizontal: 0),
-                      height: 20,
-                      child: LinearProgressIndicator(
-                        backgroundColor: Theme.of(context).backgroundColor,
-                        color: Theme.of(context).highlightColor,
-                        value: profile.healthValue / profile.maxHealth,
-                      ),
-                    ),
-                    Text("${profile.healthValue} / ${profile.maxHealth}")
+                      _displayGoldAmount()
+                    ]
+                  ),
+                  _displayHealthBar(context),
+                  Text("${profile.healthValue} / ${profile.maxHealth}")
                 ],
               ),
             ),

@@ -42,19 +42,18 @@ class CircularNav extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30.0),
-        border: Border.all(
-          color: Theme.of(context).dividerColor,
-        ),
+  Widget build(BuildContext context) => Container(
+    margin: const EdgeInsets.all(8.0),
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(30.0),
+      border: Border.all(
+        color: Theme.of(context).dividerColor,
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: navItems.map((navItem) => _createNavButton(navItem, context)).toList(),
-      ),
-    );
-  }
+    ),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: navItems.map((navItem) => _createNavButton(navItem, context)).toList(),
+    ),
+  );
+  
 }

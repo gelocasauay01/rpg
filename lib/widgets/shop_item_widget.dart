@@ -26,6 +26,7 @@ class ShopItemWidget extends StatefulWidget {
 }
 
 class _ShopItemWidgetState extends State<ShopItemWidget> {
+
   void _showErrorDialog(BuildContext context) {
     showDialog(
       context: context, 
@@ -42,6 +43,34 @@ class _ShopItemWidgetState extends State<ShopItemWidget> {
       )
     );
   }
+
+  void _buyItem() {
+
+    ShopController.buyItem(
+      profileController: Provider.of<ProfileController>(context, listen: false),
+      inventoryController: Provider.of<InventoryController>(context, listen: false),
+      shopItem: widget._shopItem, 
+      shopMode: widget._shopMode,
+      onError: () => _showErrorDialog(context)
+    );
+    
+    // rebuilds an item when a skin is bought
+    if(widget._shopMode == ShopMode.skin) {
+      setState(() {}); 
+    }
+  }
+
+  Widget _createBuyButton() => Row(
+    children: [
+      Container(
+        height: 15,
+        width: 15,
+        margin: const EdgeInsets.only(right: 8.0),
+        child: Image.asset('assets/images/coin.png')
+      ),
+      Text(widget._shopItem.price.toString()),
+    ],
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -62,39 +91,10 @@ class _ShopItemWidgetState extends State<ShopItemWidget> {
             bottomRight: Radius.circular(40.0)
           ),
           child: ElevatedButton(
-            onPressed: isSkinBought
-              ? null 
-              : () {
-                
-                ShopController.buyItem(
-                  profileController: Provider.of<ProfileController>(context, listen: false),
-                  inventoryController: Provider.of<InventoryController>(context, listen: false),
-                  shopItem: widget._shopItem, 
-                  shopMode: widget._shopMode,
-                  onError: () => _showErrorDialog(context)
-                );
-                
-                // rebuilds an item when a skin is bought
-                if(widget._shopMode == ShopMode.skin) {
-                  setState(() {}); 
-                }
-  
-              },
+            onPressed: isSkinBought ? null : _buyItem,
             child: FittedBox(
               fit: BoxFit.fitWidth,
-              child: isSkinBought
-                ? const Text('Sold')
-                : Row(
-                  children: [
-                    Container(
-                      height: 15,
-                      width: 15,
-                      margin: const EdgeInsets.only(right: 8.0),
-                      child: Image.asset('assets/images/coin.png')
-                    ),
-                    Text(widget._shopItem.price.toString()),
-                  ],
-                )
+              child: isSkinBought ? const Text('Sold') : _createBuyButton() 
             ),
           ),
         )

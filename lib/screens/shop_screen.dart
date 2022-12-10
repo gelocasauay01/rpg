@@ -38,40 +38,39 @@ class _ShopScreenState extends State<ShopScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: ClipRRect(
-        borderRadius: const BorderRadius.only(topLeft: Radius.circular(40), topRight: Radius.circular(40)),
-        child: Container(
-          color: Theme.of(context).cardColor,
-          child: Padding(
-            padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                CircularNav(
-                  navItems: [
-                    NavItem(
-                      value: ShopMode.consumable, 
-                      title: 'Consumables', 
-                      onClick: () => _switchMode(ShopMode.consumable)
-                    ),
-                    NavItem(
-                      value: ShopMode.skin, 
-                      title: 'Skins', 
-                      onClick: () => _switchMode(ShopMode.skin)
-                    ),
-                  ],
-                  currentValue: _currentMode,
-                ),
-                Expanded(
-                  child: _showShopItems()
-                )
-              ],
-            ),
-          )
-        ),
+  Widget build(BuildContext context) => Expanded(
+    child: ClipRRect(
+      borderRadius: const BorderRadius.only(topLeft: Radius.circular(40), topRight: Radius.circular(40)),
+      child: Container(
+        color: Theme.of(context).cardColor,
+        child: Padding(
+          padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              CircularNav(
+                navItems: [
+                  NavItem(
+                    value: ShopMode.consumable, 
+                    title: 'Consumables', 
+                    onClick: () => _switchMode(ShopMode.consumable)
+                  ),
+                  NavItem(
+                    value: ShopMode.skin, 
+                    title: 'Skins', 
+                    onClick: () => _switchMode(ShopMode.skin)
+                  ),
+                ],
+                currentValue: _currentMode,
+              ),
+              Expanded(
+                child: _showShopItems()
+              )
+            ],
+          ),
+        )
       ),
-    );
-  }
+    ),
+  );
+  
 }

@@ -31,18 +31,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
-  Widget _showSkillsGrid() {
-    return Consumer<SkillController>(
-      builder: (context, value, child) => SkillsGrid(value.skills),
-    );
-  }
+  Widget _showSkillsGrid() =>  Consumer<SkillController>(
+    builder: (context, value, child) => SkillsGrid(value.skills),
+  );
+ 
 
-  Widget _showInventoryList() {
-    return Consumer<InventoryController>(
-      builder: (context, value, child) => value.items.isNotEmpty ? InventoryList(value.items) : child!,
-      child: const Center(child: Text('No items yet!')),
-    );
-  }
+  Widget _showInventoryList() => Consumer<InventoryController>(
+    builder: (context, value, child) => value.items.isNotEmpty ? InventoryList(value.items) : child!,
+    child: const Center(child: Text('No items yet!')),
+  );
+  
 
   Widget _showCurrentWidget(BuildContext context) {
      Widget widget;
@@ -80,27 +78,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: ClipRRect(
-        borderRadius: const BorderRadius.only(topLeft: Radius.circular(40), topRight: Radius.circular(40)),
-        child: Container(
-          color: Theme.of(context).cardColor,
-          child: Padding(
-            padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                CircularNav(
-                  navItems: _navItems,
-                  currentValue: _currentMode
-                ),
-                Expanded(child: _showCurrentWidget(context))
-              ],
-            ),
-          )
-        ),
+  Widget build(BuildContext context) => Expanded(
+    child: ClipRRect(
+      borderRadius: const BorderRadius.only(topLeft: Radius.circular(40), topRight: Radius.circular(40)),
+      child: Container(
+        color: Theme.of(context).cardColor,
+        child: Padding(
+          padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              CircularNav(
+                navItems: _navItems,
+                currentValue: _currentMode
+              ),
+              Expanded(child: _showCurrentWidget(context))
+            ],
+          ),
+        )
       ),
-    );
-  }
+    ),
+  );
+  
 }

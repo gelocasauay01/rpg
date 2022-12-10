@@ -99,42 +99,41 @@ class _BadHabitStatsWidgetState extends State<BadHabitStatsWidget> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          NavigationHeader(
-            title: _getModeHeaderText(), 
-            onNext: () => _incrementMode(1), 
-            onPrev: () => _incrementMode(-1)
-          ),
-          _showChart(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              StatisticsItem(
-                title: 'Most Time Occurrence', 
-                content: widget._badHabitController.mostActiveBadHabitTime
-              ),
+  Widget build(BuildContext context) => SingleChildScrollView(
+    child: Column(
+      children: [
+        NavigationHeader(
+          title: _getModeHeaderText(), 
+          onNext: () => _incrementMode(1), 
+          onPrev: () => _incrementMode(-1)
+        ),
+        _showChart(),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            StatisticsItem(
+              title: 'Most Time Occurrence', 
+              content: widget._badHabitController.mostActiveBadHabitTime
+            ),
 
-              StatisticsItem(
-                title: 'Most Occurring Habit', 
-                content: widget._badHabitController.mostOccurringBadHabit
-              )
-            ]
-          ),
+            StatisticsItem(
+              title: 'Most Occurring Habit', 
+              content: widget._badHabitController.mostOccurringBadHabit
+            )
+          ]
+        ),
 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              StatisticsItem(
-                title: 'Avg. Bad Habit per Day', 
-                content: widget._badHabitController.avgBadHabitPerDay.toStringAsFixed(1)
-              ),
-            ]
-          ),
-        ]
-      ),
-    );
-  }
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            StatisticsItem(
+              title: 'Avg. Bad Habit per Day', 
+              content: widget._badHabitController.avgBadHabitPerDay.toStringAsFixed(1)
+            ),
+          ]
+        ),
+      ]
+    ),
+  );
+  
 }

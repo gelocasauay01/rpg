@@ -84,60 +84,59 @@ class _SkillModalFormState extends State<SkillModalForm> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-      child: SingleChildScrollView(
-        child: Form(
-          key: _formState,
-          child: Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: Column(
-              children: [
-                const Text('Add a Skill'),
-                TextFormField(
-                  decoration: const InputDecoration(
-                    label: Text('Title')
+  Widget build(BuildContext context) => Padding(
+    padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+    child: SingleChildScrollView(
+      child: Form(
+        key: _formState,
+        child: Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: Column(
+            children: [
+              const Text('Add a Skill'),
+              TextFormField(
+                decoration: const InputDecoration(
+                  label: Text('Title')
+                ),
+                initialValue: _skillDTO.title,
+                validator: _validateSkillTitle,
+                onSaved: (newTitle) => _skillDTO.title = newTitle,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end ,
+                children: [
+                  if(widget.skillId != null) 
+                    ElevatedButton(
+                      onPressed: () =>_deleteSkill(context),
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.resolveWith((states) => Theme.of(context).errorColor)
+                      ), 
+                      child: const Text('Delete'),
+                    ),
+                  const SizedBox(
+                    width: 10
                   ),
-                  initialValue: _skillDTO.title,
-                  validator: _validateSkillTitle,
-                  onSaved: (newTitle) => _skillDTO.title = newTitle,
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end ,
-                  children: [
-                    if(widget.skillId != null) 
-                      ElevatedButton(
-                        onPressed: () =>_deleteSkill(context),
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.resolveWith((states) => Theme.of(context).errorColor)
-                        ), 
-                        child: const Text('Delete'),
-                      ),
-                    const SizedBox(
-                      width: 10
-                    ),
-                    ElevatedButton(
-                      onPressed: () => _saveSkill(context), 
-                      child: const Text('Save')
-                    ),
-                    const SizedBox(
-                      width: 10
-                    ),
-                    ElevatedButton(
-                      onPressed: () => Navigator.of(context).pop(), 
-                      child: const Text('Cancel')
-                    ),
-                  ],
-                )
-              ],
-            ),
+                  ElevatedButton(
+                    onPressed: () => _saveSkill(context), 
+                    child: const Text('Save')
+                  ),
+                  const SizedBox(
+                    width: 10
+                  ),
+                  ElevatedButton(
+                    onPressed: () => Navigator.of(context).pop(), 
+                    child: const Text('Cancel')
+                  ),
+                ],
+              )
+            ],
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+  
 }

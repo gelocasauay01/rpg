@@ -73,8 +73,8 @@ class QuestController with ChangeNotifier{
 
   Future<void> updateQuest(int questId, QuestDTO updatedQuestDTO) async {
     Database database = await DBController.instance.database;
-    await _deleteSubFields(questId, "Subtask"); // Delete all subtasks that refer to this quest
-    await _deleteSubFields(questId, "SkillReward"); // Delete all skill reward that refer to this quest
+    await _deleteSubFields(questId, 'Subtask'); // Delete all subtasks that refer to this quest
+    await _deleteSubFields(questId, 'SkillReward'); // Delete all skill reward that refer to this quest
     await database.update('Quest', updatedQuestDTO.toJSON(), where: 'Id = ?', whereArgs: [questId]);
     updatedQuestDTO.subtasks = await _addSubtasks(questId, updatedQuestDTO.subtasks); // re-add subtasks if they still exist
     updatedQuestDTO.skillRewards = await _addSkillRewards(questId, updatedQuestDTO.skillRewards); // re-add skill rewards if they still exist
