@@ -1,6 +1,5 @@
 // External Dependencies
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/foundation.dart';
 
 // Models
@@ -29,15 +28,18 @@ class ProfileController with ChangeNotifier{
     await _writeProfile();
   }
 
-  Future<void> updateProfile(String name, File? file) async {
-    if(profile == null) return;
+  Future<void> updateProfile(String name, String? imagePath) async {
+    if(_profile == null) return;
 
-    profile!.name = name;
-    if(file != null){
-      await FileController.deleteFile(profile!.imageUrl);
-      profile!.imageUrl = file.path;
+    _profile!.name = name;
+
+    if(imagePath != null){
+      await FileController.deleteFile(_profile!.imageUrl);
+      _profile!.imageUrl = imagePath;
     } 
-      await _writeProfile();
+
+    await _writeProfile();
+    notifyListeners();
   }
 
   Future<void> takeDamage(int damage) async {

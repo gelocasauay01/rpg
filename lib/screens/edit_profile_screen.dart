@@ -32,6 +32,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   File? _file;
   String? _name;
   bool _isInit = false;
+  bool _isImageChanged = false;
 
 
   Future _pickImage(ImageSource source) async {
@@ -41,10 +42,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       File tempImage = File(image.path);
       _setImage(tempImage);
     }
+
   }
 
   void _setImage(File image) {
     setState(() {
+      _isImageChanged = true;
       _file = image;
     });
   }
@@ -68,12 +71,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     NavigatorState navigator = Navigator.of(context);
     File? permanentFile;
 
-    if(_file != null){
+    if(_isImageChanged && _file != null){
       permanentFile = await _saveImage();
     } 
 
     if(widget._isEdit){
-      await profileController.updateProfile(_name!, permanentFile);
+      String? imagePath = permanentFile?.path;
+      await profileController.updateProfile(_name!, imagePath);
       navigator.pop();
     }
 
