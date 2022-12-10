@@ -1,0 +1,4 @@
+enum ShopMode {
+  consumable,
+  skin
+}

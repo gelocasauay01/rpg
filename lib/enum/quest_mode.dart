@@ -1,0 +1,4 @@
+enum QuestMode {
+  quest,
+  badHabit
+}
