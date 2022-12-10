@@ -25,7 +25,6 @@ class BadHabitItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(_badHabit);
     return Dismissible(
       key: Key(_badHabit.id.toString()),
       direction: DismissDirection.startToEnd,

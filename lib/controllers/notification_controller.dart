@@ -50,7 +50,7 @@ class NotificationController {
       id, 
       title, 
       body, 
-      tz.TZDateTime.from(DateTime.now().add(const Duration(seconds: 5)), tz.local), 
+      tz.TZDateTime.from(dateTime, tz.local), 
       details, 
       uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime, 
       androidAllowWhileIdle: true,

@@ -12,6 +12,7 @@ import 'package:rpg/models/quest.dart';
 import 'package:rpg/controllers/quest_controller.dart';
 import 'package:rpg/controllers/profile_controller.dart';
 import 'package:rpg/controllers/skill_controller.dart';
+import 'package:rpg/models/subtask.dart';
 
 // Widgets
 import 'package:rpg/screens/quest_form_screen.dart';
@@ -46,7 +47,7 @@ class _QuestItemState extends State<QuestItem> {
     return imagePath;
   }
 
-  Future _finishQuest(BuildContext context) async {
+  Future _finishQuest() async {
     ProfileController profileController = Provider.of<ProfileController>(context, listen: false);
     
     if(profileController.isAlive) {
@@ -91,6 +92,16 @@ class _QuestItemState extends State<QuestItem> {
     );
   }
 
+  void toggleSubtask(bool value, Subtask subtask) {
+    if(widget._quest.isSubtaskFinished) {
+      _finishQuest();
+    } 
+
+    else {
+      setState(() => subtask.isDone = !subtask.isDone);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Dismissible(
@@ -127,7 +138,7 @@ class _QuestItemState extends State<QuestItem> {
                  _showConfirmDialog(context)
                   .then((isConfirmed) {
                     if(isConfirmed != null && isConfirmed) {
-                      _finishQuest(context);
+                      _finishQuest();
                     }
                   } 
                  );
@@ -137,23 +148,24 @@ class _QuestItemState extends State<QuestItem> {
             if(widget._quest.subtasks != null && _isExtend) Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
-                children: widget._quest.subtasks!.map((subtask) => Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(subtask.title),
-                    Checkbox(
-                      value: subtask.isDone, 
-                      onChanged: (value) {
-                        if(widget._quest.isSubtaskFinished) {
-                          _finishQuest(context);
-                        } 
-
-                        else {
-                          setState(() => subtask.isDone = value!);
+                children: widget._quest.subtasks!.map((subtask) => GestureDetector(
+                  onTap: () {
+                    toggleSubtask(!subtask.isDone, subtask);
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(subtask.title),
+                      Checkbox(
+                        value: subtask.isDone, 
+                        onChanged: (value) {
+                          if(value != null) {
+                            toggleSubtask(value, subtask);
+                          }
                         }
-                      }
-                    )
-                ],)).toList(),
+                      )
+                  ],),
+                )).toList(),
               ),
             )
           ],

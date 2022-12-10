@@ -122,7 +122,7 @@ class _SkillRewardDialogState extends State<SkillRewardDialog> {
           }).toList() 
         ),
       )
-      :  const Center(child: Text('No skills yet')),
+      : const Center(child: Text('No skills yet')),
     );
   }
 
