@@ -11,12 +11,14 @@ import 'package:rpg/models/skins.dart';
 import 'package:rpg/controllers/file_controller.dart';
 
 class InventoryController with ChangeNotifier{
+
+  final String _fileName = 'item.json';
   List<Item> _items = [];
 
   List<Item> get items => [..._items];
 
   Future<void> initializeItems() async {
-    String? itemJSON = await FileController.readFile('item.json');
+    String? itemJSON = await FileController.readFile(_fileName);
     
     if(itemJSON != null) {
       List<dynamic> itemsMap = jsonDecode(itemJSON);
@@ -94,6 +96,6 @@ class InventoryController with ChangeNotifier{
     }
     
     itemsMap = [...consumables, ...skins];
-    await FileController.writeFile('item.json', jsonEncode(itemsMap));
+    await FileController.writeFile(_fileName, jsonEncode(itemsMap));
   }
 }

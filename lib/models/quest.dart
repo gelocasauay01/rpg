@@ -5,8 +5,8 @@ import 'package:rpg/dto/quest_dto.dart';
 
 class Quest {
 
-  static const int baseGoldReward = 5;
-  static const int baseExpReward = 3;
+  static const int baseGoldReward = 10;
+  static const int baseExpReward = 7;
 
   final int id;
   String title;

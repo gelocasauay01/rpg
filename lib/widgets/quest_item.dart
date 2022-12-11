@@ -51,12 +51,10 @@ class _QuestItemState extends State<QuestItem> {
     ProfileController profileController = Provider.of<ProfileController>(context, listen: false);
     
     if(profileController.isAlive) {
-      QuestHistoryController questHistoryController = Provider.of<QuestHistoryController>(context, listen: false);
       SkillController skillController = Provider.of<SkillController>(context, listen: false);
       SkillUsageController skillUsageController = Provider.of<SkillUsageController>(context, listen: false);
 
       await profileController.receiveGoldReward((widget._quest.difficulty.index + 1 ) * Quest.baseGoldReward);
-      await questHistoryController.addQuestHistory(isFinished: true, difficulty: widget._quest.difficulty);
 
       if(widget._quest.skillRewards != null && widget._quest.skillRewards!.isNotEmpty) {
         await skillController.processSkillRewards(widget._quest.skillRewards!);
@@ -64,10 +62,10 @@ class _QuestItemState extends State<QuestItem> {
       }
     }
 
-    await _deleteQuest();
+    await _resolveQuest();
   }
 
-  Future<void> _deleteQuest() async {
+  Future<void> _resolveQuest({bool isFinished = true}) async {
     QuestController questController = Provider.of<QuestController>(context, listen: false);
     QuestHistoryController questHistoryController = Provider.of<QuestHistoryController>(context, listen: false);
 
@@ -75,7 +73,7 @@ class _QuestItemState extends State<QuestItem> {
       await NotificationController.instance.cancelNotification(widget._quest.id);
     }
 
-    await questHistoryController.addQuestHistory(isFinished: false, difficulty: widget._quest.difficulty);
+    await questHistoryController.addQuestHistory(isFinished: isFinished, difficulty: widget._quest.difficulty);
     await questController.deleteQuest(widget._quest.id);
   }
 
@@ -92,7 +90,7 @@ class _QuestItemState extends State<QuestItem> {
     )
   );
   
-  Future<void> _triggerFinishQuest() async {
+  Future<void> _promptFinishQuest() async {
     bool? isFinished = await _showConfirmDialog();
     if(isFinished != null && isFinished) {
       _finishQuest();
@@ -100,12 +98,14 @@ class _QuestItemState extends State<QuestItem> {
   }
 
   void toggleSubtask(bool value, Subtask subtask) {
+    subtask.isDone = value;
+
     if(widget._quest.isSubtaskFinished) {
       _finishQuest();
     } 
 
     else {
-      setState(() => subtask.isDone = !subtask.isDone);
+      setState((){});
     }
   }
 
@@ -137,12 +137,12 @@ class _QuestItemState extends State<QuestItem> {
     ? _isExtend 
       ? IconButton(onPressed: () => setState(() => _isExtend = false), icon: const Icon(Icons.arrow_upward)) 
       : IconButton(onPressed: () => setState(() => _isExtend = true), icon: const Icon(Icons.arrow_downward))
-    : IconButton(onPressed: _triggerFinishQuest, icon: const Icon(Icons.check));
+    : IconButton(onPressed: _promptFinishQuest, icon: const Icon(Icons.check));
 
   @override
   Widget build(BuildContext context) => Dismissible(
     key: Key(widget._quest.id.toString()),
-    onDismissed: (direction) async => await _deleteQuest(),
+    onDismissed: (direction) async => await _resolveQuest(isFinished: false),
     direction: DismissDirection.startToEnd,
     background: Container(
       padding: const EdgeInsets.only(left: 10.0),

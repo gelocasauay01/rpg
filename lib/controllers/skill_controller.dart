@@ -26,6 +26,7 @@ class SkillController with ChangeNotifier {
 
   Future<void> processSkillRewards(List<SkillReward> skillRewards) async {
     if(skillRewards.isNotEmpty) {
+      const int notFoundInArray = -1;
       Database database = await DBController.instance.database;
       Batch batch = database.batch();
       for(SkillReward skillReward in skillRewards) {
@@ -33,8 +34,8 @@ class SkillController with ChangeNotifier {
         int index = _skills.indexWhere((skill) => skill.id == skillReward.skillId);
 
         // earn exp only when the skill is found
-        if(index != -1) { 
-          _skills[index].earnExp(expAmount * 100);
+        if(index != notFoundInArray) { 
+          _skills[index].earnExp(expAmount);
           batch.update('Skill', _skills[index].dto.toJSON(), where: 'Id = ?', whereArgs: [_skills[index].id]);
         }
 

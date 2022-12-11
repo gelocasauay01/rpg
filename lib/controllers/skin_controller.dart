@@ -8,8 +8,8 @@ import 'package:rpg/controllers/file_controller.dart';
 
 class SkinController with ChangeNotifier {
 
-  static const String _jsonId = 'SkinId';
-  static const String _fileName = 'skin.json';
+  final String _jsonId = 'SkinId';
+  final String _fileName = 'theme.json';
 
   String _activeSkinId = Skins.normalId;
   

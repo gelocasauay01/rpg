@@ -45,10 +45,11 @@ class Skill {
     if(level >= 100) return;
     
     currentExp += expAmount;
+
     // Keep running until current experience is lower than max experience
     while(currentExp >= maxExp) {
-      level += 1;
       currentExp -= maxExp;
+      level += 1;
     }
   }
 }

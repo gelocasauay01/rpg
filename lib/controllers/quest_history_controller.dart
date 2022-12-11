@@ -113,7 +113,7 @@ class QuestHistoryController with ChangeNotifier{
       for(QuestHistory questHistory in questHistoryList) {
         // If week day has changed, check if it finds a higher count, reset the current count to zero, and set the current week day
         if(questHistory.dateFinished.weekday != currentWeekDay) {
-          if(currentQuestCompletedCount > highestCount) {
+          if(currentQuestCompletedCount >= highestCount) {
             productiveDayName = DateFormat.EEEE().format(previousDate); // Get the week day name
             highestCount = currentQuestCompletedCount;
           }

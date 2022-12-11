@@ -7,6 +7,7 @@ import 'package:rpg/models/profile.dart';
 import 'package:rpg/controllers/file_controller.dart';
 
 class ProfileController with ChangeNotifier{
+  final String _fileName = 'profile.json';
   Profile? _profile; 
 
   Profile? get profile {
@@ -74,7 +75,7 @@ class ProfileController with ChangeNotifier{
     bool isInit = false;
 
     if(_profile == null) {
-      String? profileJSON = await FileController.readFile('profile.json');
+      String? profileJSON = await FileController.readFile(_fileName);
 
       if(profileJSON != null) {
         _profile = Profile.fromJSON(jsonDecode(profileJSON));
@@ -91,6 +92,6 @@ class ProfileController with ChangeNotifier{
   }
 
     Future<void> _writeProfile() async {
-    await FileController.writeFile('profile.json', jsonEncode(profile!.toJSON()));
+    await FileController.writeFile(_fileName, jsonEncode(profile!.toJSON()));
   }
 }
