@@ -2,13 +2,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rpg/controllers/inventory_controller.dart';
-import 'package:rpg/controllers/skin_controller.dart';
+import 'package:rpg/controllers/theme_controller.dart';
 
 // Models
-import 'package:rpg/models/item.dart';
+import 'package:rpg/models/items/item.dart';
+import 'package:rpg/models/items/consumable_item.dart';
 import 'package:rpg/controllers/profile_controller.dart';
-import 'package:rpg/models/consumable_item.dart';
-
+import 'package:rpg/models/items/skin.dart';
 
 class InventoryList extends StatelessWidget {
 
@@ -20,16 +20,15 @@ class InventoryList extends StatelessWidget {
   );
 
   void _useItem(BuildContext context, Item item) {
-
     if(item is ConsumableItem) {
       // Pass the profile controller to manipulate gold value and inventory controller to manipulate item quantities
-      item.onUse(Provider.of<ProfileController>(context, listen:false));
+      item.useItem(Provider.of<ProfileController>(context, listen:false));
       Provider.of<InventoryController>(context, listen: false).decreaseConsumable(item.id);
     }
 
-    else {
+    else if(item is Skin){
       // Pass settings controller to manipulate theme data
-      item.onUse(Provider.of<SkinController>(context, listen: false));
+      item.useItem(Provider.of<ThemeController>(context, listen: false));
     }
   }   
 

@@ -14,7 +14,6 @@ class ProfileController with ChangeNotifier{
     return Profile(
       imageUrl: _profile!.imageUrl,
       name: _profile!.name,
-      maxHealth: _profile!.maxHealth,
       healthValue: _profile!.healthValue,
       goldValue: _profile!.goldValue,
     );

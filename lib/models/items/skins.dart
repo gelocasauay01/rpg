@@ -1,7 +1,8 @@
+// External Dependencies
+import 'package:flutter/material.dart';
+
 // Models
-import 'package:rpg/models/skin.dart';
-import 'package:rpg/models/skin_theme.dart';
-import 'package:rpg/controllers/skin_controller.dart';
+import 'package:rpg/models/items/skin.dart';
 
 class Skins { 
   static const String normalId = 'skin1';
@@ -12,10 +13,7 @@ class Skins {
     title: 'Normal',
     description: 'Normal Skin UI',
     imageUrl: 'assets/images/skins/normal.png',
-    themeData: SkinTheme.normal,
-    onUse: (SkinController skinController) {
-      skinController.setSkin(_normal.id);
-    }
+    themeData: ThemeData.light(useMaterial3: true),
   );
 
   static final Skin _dark = Skin(
@@ -23,10 +21,7 @@ class Skins {
     title: 'Dark',
     description: 'Night Mode Skin',
     imageUrl: 'assets/images/skins/dark.png',
-    themeData: SkinTheme.dark,
-    onUse: (SkinController skinController) {
-      skinController.setSkin(_dark.id);
-    }
+    themeData: ThemeData.dark(useMaterial3: true)
   );
 
   static Skin getSkinById(String skinId) {

@@ -7,7 +7,6 @@ import 'package:rpg/controllers/quest_history_controller.dart';
 import 'package:rpg/controllers/skill_usage_controller.dart';
 
 // Models
-import 'package:rpg/enum/difficulty.dart';
 import 'package:rpg/models/quest.dart';
 import 'package:rpg/controllers/quest_controller.dart';
 import 'package:rpg/controllers/profile_controller.dart';
@@ -35,16 +34,8 @@ class _QuestItemState extends State<QuestItem> {
   bool _isExtend = false;
 
   String _getDifficultyImagePath() {
-    String imagePath = 'assets/images/difficulty/easy.png';
-    if(widget._quest.difficulty == Difficulty.hard) {
-      imagePath = 'assets/images/difficulty/hard.png';
-    }
-
-    else if(widget._quest.difficulty == Difficulty.normal) {
-      imagePath = 'assets/images/difficulty/normal.png';
-    }
-
-    return imagePath;
+    List<String> imagePaths = [ 'assets/images/difficulty/easy.png', 'assets/images/difficulty/normal.png', 'assets/images/difficulty/hard.png'];
+    return imagePaths[widget._quest.difficulty.index];
   }
 
   Future _finishQuest() async {
@@ -89,23 +80,51 @@ class _QuestItemState extends State<QuestItem> {
       ],
     )
   );
+
+  Future<bool?> _showExpireDialog() async => await showDialog(
+    context: context, 
+    builder: (context) => AlertDialog(
+      icon: const Icon(Icons.error),
+      title: const Text('Quest Expired'),
+      content: const Text('The quest has exceeded its deadline'),
+      actions: [
+        ElevatedButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Ok')),
+      ],
+    )
+  );
+
+  Future<bool> _promptExpire() async {
+    bool isExpired = false;
+
+    if(widget._quest.deadline != null && widget._quest.deadline!.isBefore(DateTime.now())) {
+      await _showExpireDialog();
+      await _resolveQuest(isFinished: false);
+      isExpired = true;
+    }
+
+    return isExpired;
+  }
   
   Future<void> _promptFinishQuest() async {
-    bool? isFinished = await _showConfirmDialog();
-    if(isFinished != null && isFinished) {
-      _finishQuest();
+    bool isExpired = await _promptExpire();
+    if(!isExpired) {
+      bool? isFinished = await _showConfirmDialog();
+      if(isFinished != null && isFinished) {
+        _finishQuest();
+      }
     }
   }
 
-  void toggleSubtask(bool value, Subtask subtask) {
-    subtask.isDone = value;
-
-    if(widget._quest.isSubtaskFinished) {
-      _finishQuest();
-    } 
-
-    else {
-      setState((){});
+  Future<void> toggleSubtask(bool value, Subtask subtask) async {
+    bool isExpired = await _promptExpire();
+    if(!isExpired) {
+      subtask.isDone = value;
+      if(widget._quest.isSubtaskFinished) {
+        _finishQuest();
+      } 
+      else {
+        setState((){});
+      }
     }
   }
 
@@ -119,7 +138,7 @@ class _QuestItemState extends State<QuestItem> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(subtask.title),
+            Flexible(child: Text(subtask.title)),
             Checkbox(
               value: subtask.isDone, 
               onChanged: (value) {
@@ -165,7 +184,7 @@ class _QuestItemState extends State<QuestItem> {
             onTap: () => Navigator.of(context).pushNamed(QuestFormScreen.routeName, arguments: widget._quest.id),
             leading: Image.asset(_getDifficultyImagePath()),
             title: Text(widget._quest.title),
-            subtitle: widget._quest.deadline != null ? Text(DateFormat('MMMM d, yyyy').format(widget._quest.deadline!)) : null,
+            subtitle: widget._quest.deadline != null ? Text(DateFormat('MMMM d, yyyy').add_jm().format(widget._quest.deadline!)) : null,
             trailing: _createTrailingButton()
           ),
 

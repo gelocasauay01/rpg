@@ -1,18 +1,20 @@
 // External Dependencies
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:rpg/controllers/quest_history_controller.dart';
 
 // Models
-import 'package:rpg/models/nav_item.dart';
 import 'package:rpg/enum/quest_mode.dart';
+import 'package:rpg/models/bad_habit.dart';
+import 'package:rpg/models/quest.dart';
+import 'package:rpg/models/nav_item.dart';
 import 'package:rpg/controllers/bad_habit_controller.dart';
 import 'package:rpg/controllers/quest_controller.dart';
-import 'package:rpg/models/quest.dart';
+import 'package:rpg/controllers/quest_history_controller.dart';
 
 // Widgets
 import 'package:rpg/widgets/bad_habit_modal_form.dart';
 import 'package:rpg/widgets/bad_habit_item.dart';
+import 'package:rpg/widgets/empty_list_display.dart';
 import 'package:rpg/widgets/quest_item.dart';
 import 'package:rpg/widgets/circular_nav.dart';
 import 'package:rpg/screens/quest_form_screen.dart';
@@ -28,17 +30,16 @@ class _QuestScreenState extends State<QuestScreen> {
 
   QuestMode _currentMode = QuestMode.quest;
 
-  Future<List<Quest>> _initializeQuests() async {
-    QuestController questController = Provider.of<QuestController>(context, listen: false);
+  Future<List<Quest>> _initializeQuests(QuestController questController) async {
     QuestHistoryController questHistoryController = Provider.of<QuestHistoryController>(context, listen: false);
 
-    await questController.getQuests();
+    await questController.initializeQuests();
     await questHistoryController.addQuestHistories(false, questController.expiredQuests);
     await questController.deleteExpiredQuests();
 
     return questController.quests;
   }
-  
+
   void _switchMode(QuestMode questMode) {
     setState(() {
       _currentMode = questMode;
@@ -60,13 +61,18 @@ class _QuestScreenState extends State<QuestScreen> {
   }
 
   Widget _showQuestList() =>  Consumer<QuestController>(
-    child: const Center(child: Text('No quests yet!')), 
+    child: const Center(
+      child: EmptyListDisplay(
+        assetFilePath: 'assets/images/empty-lists/quest.png',
+        text: 'No quests yet',
+      )
+    ),
     builder: (context, value, child) => FutureBuilder(
-      future: _initializeQuests(),
+      future: _initializeQuests(value),
       builder: (context, snapshot) {
         Widget widget = const Center(child: CircularProgressIndicator());
         if(snapshot.connectionState == ConnectionState.done && snapshot.data!.isNotEmpty) {
-          List quests = snapshot.data as List; 
+          List<Quest> quests = snapshot.data!; 
           widget = ListView.builder(
             itemCount: quests.length,
             itemBuilder: (context, index) => QuestItem(quests[index])
@@ -83,13 +89,32 @@ class _QuestScreenState extends State<QuestScreen> {
   );
 
   Widget _showBadHabitsList() => Consumer<BadHabitController>(
-    child: const Center(child: Text('No bad habits yet!')),
-    builder: (context, value, child) => value.badHabits.isNotEmpty
-    ? ListView.builder(
-        itemCount: value.badHabits.length,
-        itemBuilder: (context, index) => BadHabitItem(value.badHabits[index])
+    child: const Center(
+      child: EmptyListDisplay(
+        assetFilePath:'assets/images/empty-lists/bad-habits.png', 
+        text: 'No bad habits yet!'
       )
-    : child!
+    ),
+    builder: (context, value, child) => FutureBuilder(
+      future: value.initializeBadHabits(),
+      builder: (context, snapshot) {
+        Widget widget = const Center(child: CircularProgressIndicator());
+
+        if(snapshot.connectionState == ConnectionState.done && snapshot.data!.isNotEmpty) {
+          List<BadHabit> badHabits = snapshot.data!;
+          widget = ListView.builder(
+            itemCount: badHabits.length,
+            itemBuilder: (context, index) => BadHabitItem(badHabits[index])
+          );
+        }
+
+        else if(snapshot.connectionState == ConnectionState.done && value.badHabits.isEmpty) {
+          widget = child!;
+        }
+
+        return widget;
+      }
+    )
   );
   
   @override

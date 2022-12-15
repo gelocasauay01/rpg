@@ -1,6 +1,7 @@
 // External Dependencies
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 // Models
 import 'package:rpg/models/profile.dart';
@@ -17,18 +18,24 @@ class CharacterHeader extends StatelessWidget {
     super.key
   });
 
-  Widget _displayGoldAmount() => Row(
-    children: [
-      SizedBox(
-        height: 16,
-        child: Image.asset(
-          "assets/images/coin.png",
-          fit: BoxFit.cover,
+  Widget _displayGoldAmount(BuildContext context) {
+    NumberFormat formatter = NumberFormat('#,###,##0');
+    return Row(
+      children: [
+        SizedBox(
+          height: 16,
+          child: Image.asset(
+            "assets/images/coin.png",
+            fit: BoxFit.cover,
+          )
+        ),
+        Text(
+          formatter.format(profile.goldValue),
+          style: Theme.of(context).primaryTextTheme.titleMedium
         )
-      ),
-      Text(profile.goldValue.toString())
-    ],
-  );
+      ],
+    );
+  }
 
   Widget _displayHealthBar(BuildContext context) {
     const double lowHealthPercent = 0.3;
@@ -57,13 +64,16 @@ class CharacterHeader extends StatelessWidget {
         width: double.infinity,
         height: screenHeight * 0.15,
         child: Row(children: [
-          AspectRatio(
-            aspectRatio: 1/1,
-            child: GestureDetector(
-              onTap: () => Navigator.of(context).pushNamed(EditProfileScreen.routeName),
-              child: Image.file(
-                File(profile.imageUrl),
-                fit: BoxFit.cover,
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8.0),
+            child: AspectRatio(
+              aspectRatio: 1/1,
+              child: GestureDetector(
+                onTap: () => Navigator.of(context).pushNamed(EditProfileScreen.routeName),
+                child: Image.file(
+                  File(profile.imageUrl),
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           ),
@@ -77,12 +87,18 @@ class CharacterHeader extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(profile.name),
-                      _displayGoldAmount()
+                      Text(
+                        profile.name,
+                        style: Theme.of(context).primaryTextTheme.titleMedium
+                      ),
+                      _displayGoldAmount(context)
                     ]
                   ),
                   _displayHealthBar(context),
-                  Text("${profile.healthValue} / ${profile.maxHealth}")
+                  Text(
+                    "${profile.healthValue} / ${profile.maxHealth}",
+                    style: Theme.of(context).primaryTextTheme.labelMedium
+                  )
                 ],
               ),
             ),

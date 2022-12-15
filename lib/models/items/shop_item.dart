@@ -1,4 +1,4 @@
-import 'package:rpg/models/item.dart';
+import 'package:rpg/models/items/item.dart';
 
 class ShopItem {
   final Item item;

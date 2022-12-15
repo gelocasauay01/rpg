@@ -41,7 +41,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       result = "This field cannot be null";
     }
 
-    else if(value.isEmpty) {
+    else if(value.isEmpty || value.trim().isEmpty) {
       result = "This field cannot be empty";
     }
 
@@ -130,65 +130,66 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15.0),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Expanded(
-                child: Column(
-                  children: [
-                    _file != null 
-                    ? SizedBox(
-                        height: 200,
-                        width: 200,
-                        child: Image.file(
-                          _file!,
-                          fit: BoxFit.cover
-                        ),
-                      )
-                    : Container(
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  _file != null 
+                  ? SizedBox(
                       height: 200,
                       width: 200,
-                      decoration: BoxDecoration(border: Border.all()),
-                      child: const Center(child: Text("Choose an image")),
-                    ),
-                    
-                    Row(    
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          child: IconButton(
-                            onPressed: () => _pickImage(ImageSource.camera), 
-                            icon: const Icon(Icons.camera)
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () => _pickImage(ImageSource.gallery), 
-                          icon: const Icon(Icons.browse_gallery)
-                        ),
-                      ],
-                    ),
-                    
-                    TextFormField(
-                      validator: _validateName,
-                      onSaved: (newValue) {
-                        _name = newValue;
-                      },
-                      initialValue: _name,
-                      decoration: const InputDecoration(
-                        labelText: "Name"
+                      child: Image.file(
+                        _file!,
+                        fit: BoxFit.cover
                       ),
+                    )
+                  : Container(
+                    height: 200,
+                    width: 200,
+                    decoration: BoxDecoration(border: Border.all()),
+                    child: const Center(child: Text("Choose an image")),
+                  ),
+                  
+                  Row(    
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        child: IconButton(
+                          onPressed: () => _pickImage(ImageSource.camera), 
+                          icon: const Icon(Icons.camera)
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () => _pickImage(ImageSource.gallery), 
+                        icon: const Icon(Icons.browse_gallery)
+                      ),
+                    ],
+                  ),
+                  
+                  TextFormField(
+                    validator: _validateName,
+                    onSaved: (newValue) {
+                      _name = newValue;
+                    },
+                    initialValue: _name,
+                    decoration: const InputDecoration(
+                      labelText: "Name"
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  TextButton(
+                  ElevatedButton(
                     onPressed: _saveProfile, 
                     child: const Text("Save")
                   ),
-                  if (widget._isEdit) TextButton(
+                  if (widget._isEdit) ElevatedButton(
                     onPressed: (){
                       Navigator.of(context).pop();
                     }, 

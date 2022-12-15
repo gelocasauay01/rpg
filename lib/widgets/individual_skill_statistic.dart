@@ -100,7 +100,7 @@ class _IndividualStatisticState extends State<IndividualSkillStatistic> {
       }
 
       else if(snapshot.connectionState == ConnectionState.done && _skillUsageController!.isEmpty) {
-        widget = const Center(child: Text('No skill usage data yet'));
+        widget = const Expanded(child: Center(child: Text('No skill usage data yet!')));
       }
 
       return widget;

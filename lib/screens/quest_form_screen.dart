@@ -92,7 +92,7 @@ class _QuestFormScreenState extends State<QuestFormScreen> {
       result = 'This field must not be null';
     }
 
-    else if(value.isEmpty) {
+    else if(value.isEmpty || value.trim().isEmpty) {
       result = 'This field cannot be empty';
     }
 
@@ -106,7 +106,11 @@ class _QuestFormScreenState extends State<QuestFormScreen> {
   String? _validateSubtask(String? value) {
     String? result;
 
-    if(value != null && value.isNotEmpty && value.length <= 3) {
+    if(value == null) {
+      result = 'This field cannot be null';
+    }
+
+    else if(value.isEmpty || value.trim().isEmpty || value.length <= 3) {
       result = 'This field must have more than 3 characters';
     }
 

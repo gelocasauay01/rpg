@@ -20,14 +20,14 @@ class BadHabitItem extends StatelessWidget {
   );
 
   String _displayLastActDate() {
-    return 'Last Act: ${_badHabit.occurrences != null && _badHabit.occurrences!.isNotEmpty ? DateFormat('MMMM d, yyyy').format(_badHabit.occurrences!.last) : 'None'}';
+    return 'Last Act: ${_badHabit.lastOccurred != null ? DateFormat('MMMM d, yyyy').add_jm().format(_badHabit.lastOccurred!) : 'None'}';
   }
 
   Future<void> _triggerBadHabit(BuildContext context) async {
     BadHabitController badHabitController = Provider.of<BadHabitController>(context, listen: false);
     ProfileController profileController = Provider.of<ProfileController>(context, listen: false);
 
-    await badHabitController.addOccurrence(_badHabit.id, DateTime.now());
+    await badHabitController.updateOccurrence(_badHabit.id, DateTime.now());
     await profileController.takeDamage(_badHabit.damage);
   }
 
@@ -57,7 +57,7 @@ class BadHabitItem extends StatelessWidget {
           border: Border.all(color: Colors.black)
         ),
         child: ListTile(
-          leading: Text(_badHabit.occurrences != null ? _badHabit.occurrences!.length.toString() : '0'),
+          leading: Text(_badHabit.occurrenceCount.toString()),
           title: Text(_badHabit.title),
           trailing: IconButton(
             onPressed: () => _triggerBadHabit(context), 

@@ -1,33 +1,29 @@
 class Profile {
-
+  final int maxHealth = 20;
   String name;
   String imageUrl;
   int goldValue;
   int healthValue;
-  int maxHealth;
 
   Profile({
     required this.name,
     required this.imageUrl,
     this.goldValue = 1000,
-    this.healthValue = 10,
-    this.maxHealth = 10,
+    this.healthValue = 20,
   });
 
   Profile.fromJSON(Map<String, dynamic> json) :
-    name = json["Name"],
-    imageUrl = json['ImageUrl'],
+    name = json["Name"] as String,
+    imageUrl = json['ImageUrl'] as String,
     goldValue = json['GoldValue'] as int,
-    healthValue = json['HealthValue'] as int,
-    maxHealth = json['MaxHealth'] as int;
+    healthValue = json['HealthValue'] as int;
   
   Map<String,dynamic> toJSON() {
     return {
       'Name': name,
       'ImageUrl': imageUrl,
       'GoldValue': goldValue,
-      'HealthValue': healthValue,
-      'MaxHealth': maxHealth
+      'HealthValue': healthValue
     };
   }
 
@@ -52,7 +48,6 @@ class Profile {
 
   void heal(int healValue) {
     healthValue += healValue;
-
     if(healthValue > maxHealth) {
       healthValue = maxHealth;
     }

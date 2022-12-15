@@ -1,10 +1,7 @@
 // Models
-import 'package:rpg/enum/shop_mode.dart';
-import 'package:rpg/models/shop_item.dart';
-import 'package:rpg/models/potions.dart';
-import 'package:rpg/models/skins.dart';
-import 'package:rpg/models/consumable_item.dart';
-import 'package:rpg/models/item.dart';
+import 'package:rpg/models/items/shop_item.dart';
+import 'package:rpg/models/items/potions.dart';
+import 'package:rpg/models/items/skins.dart';
 import 'package:rpg/controllers/inventory_controller.dart';
 import 'package:rpg/controllers/profile_controller.dart';
 
@@ -35,16 +32,9 @@ class ShopController {
 
   List<ShopItem> get skinShopItems => [..._skinShopItems];
 
-  static void buyItem({required ProfileController profileController, required InventoryController inventoryController, required ShopItem shopItem, required ShopMode shopMode, required Function onError}) {
+  static void buyItem({required ProfileController profileController, required InventoryController inventoryController, required ShopItem shopItem, required Function onError}) {
     if(profileController.isCanBuy(shopItem.price)) {
-      Item newItem = shopItem.item;
-
-      // Converts item to consumable item
-      if(shopMode == ShopMode.consumable) {
-        newItem = ConsumableItem.fromItem(item: newItem, quantity: 1);
-      }
-
-      inventoryController.addItem(newItem, shopMode);
+      inventoryController.addItem(shopItem.item);
       profileController.payGold(shopItem.price);
     }
     

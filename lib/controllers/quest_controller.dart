@@ -28,7 +28,7 @@ class QuestController with ChangeNotifier{
     return expiredQuests;
   }
 
-  Future<void> getQuests() async {
+  Future<void> initializeQuests() async {
     Database database = await DBController.instance.database;
     List<Quest> quests = [];
     List<Map<String, dynamic>> json = await database.query("Quest");
@@ -87,40 +87,16 @@ class QuestController with ChangeNotifier{
     notifyListeners();
   }
 
-  Future<void> deleteQuests(List<int> questIds) async {
+  Future<void> deleteExpiredQuests() async {
     Database database = await DBController.instance.database;
-    Batch batch = database.batch();
-
-    for(int questId in questIds) {
-      batch.delete('Quest', where: 'Id = ?', whereArgs: [questId]);
-    }
-
-    await batch.commit();
+    int now = DateTime.now().toLocal().millisecondsSinceEpoch;
+    await database.delete('Quest',where: 'Deadline < ?', whereArgs: [now]);
   }
 
   Future<void> deleteSkillRewards(int skillId) async {
     Database database = await DBController.instance.database;
     await database.delete('SkillReward', where: 'SkillId = ?', whereArgs: [skillId]);
     notifyListeners();
-  }
-
-  Future<void> deleteExpiredQuests() async {
-    List<int> questIds = [];
-    DateTime now = DateTime.now();
-
-    for(Quest quest in _quests) {
-      if(quest.deadline != null && now.isAfter(quest.deadline!)) {
-        questIds.add(quest.id);
-      }
-    }
-
-    if(questIds.isNotEmpty) {
-      _quests = _quests.where(
-        (quest) => !questIds.contains(quest.id)
-      ).toList();
-      await deleteQuests(questIds);
-    }
-    
   }
 
   Future<List<Subtask>?> _getSubtasks(int questId) async {

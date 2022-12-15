@@ -32,7 +32,7 @@ class _SkillModalFormState extends State<SkillModalForm> {
       result = 'Title cannot be null';
     }
 
-    else if (value.isEmpty) {
+    else if (value.isEmpty || value.trim().isEmpty) {
       result = 'This field cannot be empty';
     }
 
@@ -111,9 +111,6 @@ class _SkillModalFormState extends State<SkillModalForm> {
                   if(widget.skillId != null) 
                     ElevatedButton(
                       onPressed: () =>_deleteSkill(context),
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.resolveWith((states) => Theme.of(context).errorColor)
-                      ), 
                       child: const Text('Delete'),
                     ),
                   const SizedBox(

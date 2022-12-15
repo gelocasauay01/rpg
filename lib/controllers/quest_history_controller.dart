@@ -176,7 +176,7 @@ class QuestHistoryController with ChangeNotifier{
 
     for(Quest quest in quests) {
       batch.insert(
-        'Quest', 
+        'QuestHistory', 
         createHistoryJson(
           isFinished: isFinished, 
           difficulty: quest.difficulty

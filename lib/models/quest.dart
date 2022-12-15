@@ -25,7 +25,7 @@ class Quest {
   Quest.fromJSON(Map<String, dynamic> json, { this.skillRewards, this.subtasks }) : 
     id = json["Id"] as int,
     title = json["Title"] as String,
-    deadline = json['Deadline'] != null && (json['Deadline'] as String).isNotEmpty ? DateTime.parse(json["Deadline"]) : null;
+    deadline = json['Deadline'] != null ? DateTime.fromMillisecondsSinceEpoch(json['Deadline'] as int) : null;
 
   Difficulty get difficulty {
     Difficulty highestDifficulty = Difficulty.easy;

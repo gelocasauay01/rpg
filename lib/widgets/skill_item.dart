@@ -41,17 +41,21 @@ class SkillItem extends StatelessWidget {
     ]
   );
 
-  Widget _displaySkillTitle() => Column(
+  Widget _displaySkillTitle(BuildContext context) => Column(
     mainAxisAlignment: MainAxisAlignment.center,
     crossAxisAlignment: CrossAxisAlignment.center,
     children: [
-      Text('Lvl. ${_skill.level}'),
+      Text(
+        'Lvl. ${_skill.level}',
+        style: Theme.of(context).textTheme.caption,
+      ),
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: FittedBox(
           fit: BoxFit.contain,
           child: Text(
             _skill.title, 
+            style: Theme.of(context).textTheme.titleMedium,
             textAlign: TextAlign.center,
           ),
         ),
@@ -77,7 +81,7 @@ class SkillItem extends StatelessWidget {
         children: [ 
           _createSkillBadge(context),
           const SizedBox(height: 5),
-          _displaySkillTitle()
+          _displaySkillTitle(context)
         ]
       ),
     ),

@@ -5,7 +5,7 @@ import 'package:rpg/controllers/profile_controller.dart';
 
 
 // Models
-import 'package:rpg/models/shop_item.dart';
+import 'package:rpg/models/items/shop_item.dart';
 import 'package:rpg/controllers/inventory_controller.dart';
 import 'package:rpg/enum/shop_mode.dart';
 import 'package:rpg/controllers/shop_controller.dart';
@@ -50,13 +50,12 @@ class _ShopItemWidgetState extends State<ShopItemWidget> {
       profileController: Provider.of<ProfileController>(context, listen: false),
       inventoryController: Provider.of<InventoryController>(context, listen: false),
       shopItem: widget._shopItem, 
-      shopMode: widget._shopMode,
       onError: () => _showErrorDialog(context)
     );
     
     // rebuilds an item when a skin is bought
     if(widget._shopMode == ShopMode.skin) {
-      setState(() {}); 
+      setState(() { }); 
     }
   }
 
@@ -74,7 +73,8 @@ class _ShopItemWidgetState extends State<ShopItemWidget> {
 
   @override
   Widget build(BuildContext context) {
-    bool isSkinBought = widget._shopMode == ShopMode.skin && Provider.of<InventoryController>(context, listen: false).isItemExist(widget._shopItem.item.id);
+    InventoryController inventoryController = Provider.of<InventoryController>(context, listen: false);
+    bool isSkinBought = widget._shopMode == ShopMode.skin && inventoryController.isItemExist(widget._shopItem.item.id);
     return Container(
       margin: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
@@ -90,11 +90,16 @@ class _ShopItemWidgetState extends State<ShopItemWidget> {
             topRight: Radius.circular(40.0), 
             bottomRight: Radius.circular(40.0)
           ),
-          child: ElevatedButton(
-            onPressed: isSkinBought ? null : _buyItem,
+          child: isSkinBought 
+          ? const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text('Sold'),
+          ) 
+          : ElevatedButton(
+            onPressed: _buyItem,
             child: FittedBox(
               fit: BoxFit.fitWidth,
-              child: isSkinBought ? const Text('Sold') : _createBuyButton() 
+              child: _createBuyButton() 
             ),
           ),
         )

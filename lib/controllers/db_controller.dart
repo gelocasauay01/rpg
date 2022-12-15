@@ -27,7 +27,7 @@ class DBController {
       CREATE TABLE Quest(
         Id INTEGER PRIMARY KEY AUTOINCREMENT,
         Title TEXT NOT NULL,
-        Deadline TEXT
+        Deadline INTEGER
       )
     ''');
 
@@ -83,7 +83,7 @@ class DBController {
       CREATE TABLE BadHabitOccurrence(
         Id INTEGER PRIMARY KEY AUTOINCREMENT,
         BadHabitId INTEGER NOT NULL,
-        DateOccurred TEXT NOT NULL,
+        DateOccurred INTEGER NOT NULL,
         FOREIGN KEY(BadHabitId) REFERENCES BadHabit(Id) ON DELETE CASCADE ON UPDATE CASCADE
       )
     ''');

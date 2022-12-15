@@ -3,18 +3,16 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 // Models
-import 'package:rpg/models/skins.dart';
+import 'package:rpg/models/items/skins.dart';
 import 'package:rpg/controllers/file_controller.dart';
 
-class SkinController with ChangeNotifier {
+class ThemeController with ChangeNotifier {
 
   final String _jsonId = 'SkinId';
   final String _fileName = 'theme.json';
 
   String _activeSkinId = Skins.normalId;
   
-  SkinController();
-
   ThemeData get themeData {
     return Skins.getSkinById(_activeSkinId).themeData;
   }

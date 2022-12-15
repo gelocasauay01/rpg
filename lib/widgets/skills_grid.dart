@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 // Models
 import 'package:rpg/models/skill.dart';
+import 'package:rpg/widgets/empty_list_display.dart';
 
 // Widgets
 import 'package:rpg/widgets/skill_item.dart';
@@ -39,7 +40,12 @@ class SkillsGrid extends StatelessWidget {
           itemCount: _skills.length,
           itemBuilder: ((context, index) => SkillItem(_skills[index]))
         )
-        : const Center(child: Text('No skills yet!')),
+        : const Center(
+            child: EmptyListDisplay(
+              assetFilePath: 'assets/images/empty-lists/skills.png', 
+              text: 'No skills yet!'
+            )
+          ),
           Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 0),
           child: Align(

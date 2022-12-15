@@ -3,11 +3,12 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 
 // Models
-import 'package:rpg/enum/shop_mode.dart';
-import 'package:rpg/models/item.dart';
-import 'package:rpg/models/consumable_item.dart';
-import 'package:rpg/models/potions.dart';
-import 'package:rpg/models/skins.dart';
+import 'package:rpg/models/items/item.dart';
+import 'package:rpg/models/items/consumable_item.dart';
+import 'package:rpg/models/items/potion.dart';
+import 'package:rpg/models/items/potions.dart';
+import 'package:rpg/models/items/skin.dart';
+import 'package:rpg/models/items/skins.dart';
 import 'package:rpg/controllers/file_controller.dart';
 
 class InventoryController with ChangeNotifier{
@@ -19,29 +20,28 @@ class InventoryController with ChangeNotifier{
 
   Future<void> initializeItems() async {
     String? itemJSON = await FileController.readFile(_fileName);
-    
+    List<Item> initialItems = [Skins.getSkinById(Skins.normalId)];
     if(itemJSON != null) {
       List<dynamic> itemsMap = jsonDecode(itemJSON);
-      _items = itemsMap.map((item) => item['Type'] == 'Consumable' 
-        ? ConsumableItem.fromItem(item: Potions.getPotionById(item['Id']), quantity: item['Quantity']) 
+      initialItems = itemsMap.map((item) => item['Type'] == 'Consumable' 
+        ? ConsumableItem.fromPotion(potion: Potions.getPotionById(item['Id']), quantity: item['Quantity']) 
         : Skins.getSkinById(item['Id'])).toList();
     }
-
-    else {
-      _items = [Skins.getSkinById(Skins.normalId)];
-      await _saveItems();
-    }
-
+    _items = initialItems;
   }
 
-  Future<void> addItem(Item newItem, ShopMode shopMode) async {
+  Future<void> addItem(Item newItem) async {
     int index = _items.indexWhere((item) => item.id == newItem.id);
-
+    bool isPotion = newItem is Potion;
+    
     if(index == -1) {
+      if(isPotion) {
+        newItem = ConsumableItem.fromPotion(potion: newItem, quantity: 1);
+      }
       _items.add(newItem);
     } 
 
-    else if(_items[index] is ConsumableItem && shopMode == ShopMode.consumable) {
+    else if (isPotion){
       ConsumableItem item = _items[index] as ConsumableItem;
       item.incrementQuantity(1);
       _items[index] = item;
@@ -54,16 +54,17 @@ class InventoryController with ChangeNotifier{
   Future<void> decreaseConsumable(String itemId) async {
     int index = _items.indexWhere((item) => item.id == itemId);
 
-    if(index == -1 || _items[index] is! ConsumableItem) {
+    if(index == -1 || _items[index] is Skin) {
       return;
     }
 
-    ConsumableItem item = _items[index] as ConsumableItem;
-    item.quantity -= 1;
-
-    if(item.quantity <= 0) {
-      _items.removeAt(index);
-    }
+    if(_items[index] is ConsumableItem) {
+      ConsumableItem item = _items[index] as ConsumableItem;
+      item.incrementQuantity(-1);
+      if(item.quantity <= 0) {
+        _items.removeAt(index);
+      }
+    } 
 
     await _saveItems();
     notifyListeners();
@@ -80,18 +81,10 @@ class InventoryController with ChangeNotifier{
 
     for(Item item in _items) {
       if(item is ConsumableItem) {
-        ConsumableItem consumableItem = item;
-        consumables.add({
-          'Id': item.id,
-          'Type': 'Consumable',
-          'Quantity': consumableItem.quantity
-        });
+        consumables.add(item.toJSON());
       }
-      else {
-        skins.add({
-          'Id': item.id,
-          'Type': 'Skin'
-        });
+      else if(item is Skin){
+        skins.add(item.toJSON());
       }
     }
     

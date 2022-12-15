@@ -18,7 +18,7 @@ class QuestDTO {
   Map<String, dynamic> toJSON(){
     return {
       'Title': title,
-      'Deadline': deadline != null ? deadline!.toIso8601String() : null
+      'Deadline': deadline != null ? deadline!.toLocal().millisecondsSinceEpoch : null
     };
   }
 }

@@ -32,7 +32,7 @@ class _BadHabitModalFormState extends State<BadHabitModalForm> {
       result = 'Title cannot be null';
     }
 
-    else if (value.isEmpty) {
+    else if (value.isEmpty || value.trim().isEmpty) {
       result = 'This field cannot be empty';
     }
 
@@ -50,7 +50,7 @@ class _BadHabitModalFormState extends State<BadHabitModalForm> {
       result = 'Title cannot be null';
     }
 
-    else if (value.isEmpty) {
+    else if (value.isEmpty || value.trim().isEmpty) {
       result = 'This field cannot be empty';
     }
 

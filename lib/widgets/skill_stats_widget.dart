@@ -5,6 +5,7 @@ import 'package:flutter_radar_chart/flutter_radar_chart.dart';
 
 // Models
 import 'package:rpg/controllers/skill_controller.dart';
+import 'package:rpg/widgets/empty_list_display.dart';
 import 'package:rpg/widgets/individual_skill_statistic.dart';
 
 class SkillStatsWidget extends StatelessWidget {
@@ -34,6 +35,11 @@ class SkillStatsWidget extends StatelessWidget {
         const IndividualSkillStatistic()
       ],
     )
-    : const Center(child: Text('No skills data yet!'));
+    : const Center(
+        child: EmptyListDisplay(
+          assetFilePath: 'assets/images/empty-lists/skill-stats.png', 
+          text: 'No skills data yet!'
+        )
+      );
   }
 }

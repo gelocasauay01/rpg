@@ -5,6 +5,7 @@ import 'package:rpg/widgets/chart_modes_widget.dart';
 // Models
 import 'package:rpg/enum/chart_mode.dart';
 import 'package:rpg/controllers/quest_history_controller.dart';
+import 'package:rpg/widgets/empty_list_display.dart';
 import 'package:rpg/widgets/navigation_header.dart';
 
 // Widgets
@@ -157,7 +158,12 @@ class _QuestStatisticsWidgetState extends State<QuestStatisticsWidget> {
       }
 
       else if (snapshot.connectionState == ConnectionState.done && widget._questHistoryController.isEmpty) {
-        returnedWidget = const Center(child: Text('No quest history data yet!'));
+        returnedWidget = const Center(
+          child: EmptyListDisplay(
+            assetFilePath: 'assets/images/empty-lists/quest-stats.png', 
+            text: 'No quest data yet!'
+          )
+        );
       }
 
       return returnedWidget;

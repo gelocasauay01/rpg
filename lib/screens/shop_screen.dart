@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:rpg/models/nav_item.dart';
 import 'package:rpg/enum/shop_mode.dart';
 import 'package:rpg/controllers/shop_controller.dart';
-import 'package:rpg/models/shop_item.dart';
+import 'package:rpg/models/items/shop_item.dart';
 
 // Widget
 import 'package:rpg/widgets/circular_nav.dart';

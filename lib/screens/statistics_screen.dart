@@ -7,7 +7,7 @@ import 'package:rpg/enum/statistics_mode.dart';
 import 'package:rpg/models/nav_item.dart';
 import 'package:rpg/controllers/quest_history_controller.dart';
 import 'package:rpg/controllers/skill_controller.dart';
-import 'package:rpg/controllers/bad_habit_controller.dart';
+import 'package:rpg/controllers/bad_habit_occurrence_controller.dart';
 
 // Widgets
 import 'package:rpg/widgets/circular_nav.dart';
@@ -43,7 +43,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       }
 
       case StatisticsMode.badHabits: {
-        currentWidget = BadHabitStatsWidget(Provider.of<BadHabitController>(context));
+        currentWidget = BadHabitStatsWidget(Provider.of<BadHabitOccurrenceController>(context));
         break;
       }
 

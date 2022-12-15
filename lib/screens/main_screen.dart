@@ -1,13 +1,12 @@
 // External Dependencies
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:rpg/controllers/inventory_controller.dart';
 
 // Models
 import 'package:rpg/controllers/profile_controller.dart';
-import 'package:rpg/controllers/bad_habit_controller.dart';
 import 'package:rpg/controllers/skill_controller.dart';
-import 'package:rpg/controllers/skin_controller.dart';
-import 'package:rpg/controllers/inventory_controller.dart';
+import 'package:rpg/controllers/theme_controller.dart';
 import 'package:rpg/controllers/notification_controller.dart';
 
 // Widgets
@@ -30,19 +29,16 @@ class MainScreen extends StatelessWidget {
   }  
 
   Future<bool> initializeGame(BuildContext context) async {
-    SkinController skinController = Provider.of<SkinController>(context, listen: false);
+    ThemeController themeController = Provider.of<ThemeController>(context, listen: false);
     SkillController skillController = Provider.of<SkillController>(context, listen: false);
-    BadHabitController badHabitController = Provider.of<BadHabitController>(context, listen: false);
-    ProfileController profileController = Provider.of<ProfileController>(context, listen: false);
     InventoryController inventoryController = Provider.of<InventoryController>(context, listen: false);
-    listenToNotification(context);
+    ProfileController profileController = Provider.of<ProfileController>(context, listen: false);
     
-    await NotificationController.instance.initializeNotifier();
-    await skinController.initializeSkin();
-    await skillController.initializeSkills();
-    await badHabitController.initializeBadHabits();
-    await inventoryController.initializeItems();
+    NotificationController.instance.initializeNotifier().then((_) => listenToNotification(context));
 
+    await themeController.initializeSkin();
+    await skillController.initializeSkills();
+    await inventoryController.initializeItems();    
     return profileController.isNewGame();
   }
 
@@ -65,3 +61,4 @@ class MainScreen extends StatelessWidget {
   );
   
 }
+

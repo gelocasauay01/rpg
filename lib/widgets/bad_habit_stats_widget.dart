@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 
 // Models
-import 'package:rpg/controllers/bad_habit_controller.dart';
+import 'package:rpg/controllers/bad_habit_occurrence_controller.dart';
 import 'package:rpg/enum/chart_mode.dart';
 
 // Widgets
@@ -12,10 +12,10 @@ import 'package:rpg/widgets/statistics_item.dart';
 
 
 class BadHabitStatsWidget extends StatefulWidget {
-  final BadHabitController _badHabitController;
+  final BadHabitOccurrenceController _badHabitOccurrenceController;
 
   const BadHabitStatsWidget(
-    this._badHabitController,
+    this._badHabitOccurrenceController,
     { super.key }
   );
 
@@ -33,19 +33,19 @@ class _BadHabitStatsWidgetState extends State<BadHabitStatsWidget> {
 
     switch(_currentMode) {
       case ChartMode.thisWeek: {
-        dataSource = widget._badHabitController.recentWeekBadHabitsOccurred;
+        dataSource = widget._badHabitOccurrenceController.recentWeekBadHabitsOccurred;
         xKey = 'day';
         yKey = 'amount';
         break;
       }
       case ChartMode.thisMonth: {
-        dataSource = widget._badHabitController.thisMonthBadHabitsOccurred;
+        dataSource = widget._badHabitOccurrenceController.thisMonthBadHabitsOccurred;
         xKey = 'day';
         yKey = 'amount';
         break;
       }
       case ChartMode.thisYear: {
-        dataSource = widget._badHabitController.thisYearBadHabitsOccurred;
+        dataSource = widget._badHabitOccurrenceController.thisYearBadHabitsOccurred;
         xKey = 'month';
         yKey = 'amount';
       }
@@ -98,8 +98,7 @@ class _BadHabitStatsWidgetState extends State<BadHabitStatsWidget> {
     return '$header Report';
   }
 
-  @override
-  Widget build(BuildContext context) => SingleChildScrollView(
+  Widget _getMainWidget() => SingleChildScrollView(
     child: Column(
       children: [
         NavigationHeader(
@@ -113,12 +112,12 @@ class _BadHabitStatsWidgetState extends State<BadHabitStatsWidget> {
           children: [
             StatisticsItem(
               title: 'Most Time Occurrence', 
-              content: widget._badHabitController.mostActiveBadHabitTime
+              content: widget._badHabitOccurrenceController.mostActiveBadHabitTime
             ),
 
             StatisticsItem(
               title: 'Most Occurring Habit', 
-              content: widget._badHabitController.mostOccurringBadHabit
+              content: widget._badHabitOccurrenceController.mostOccurringBadHabit
             )
           ]
         ),
@@ -128,12 +127,42 @@ class _BadHabitStatsWidgetState extends State<BadHabitStatsWidget> {
           children: [
             StatisticsItem(
               title: 'Avg. Bad Habit per Day', 
-              content: widget._badHabitController.avgBadHabitPerDay.toStringAsFixed(1)
+              content: widget._badHabitOccurrenceController.avgBadHabitPerDay.toStringAsFixed(1)
             ),
           ]
         ),
       ]
     ),
+  );
+
+  @override
+  Widget build(BuildContext context) => FutureBuilder(
+    future: widget._badHabitOccurrenceController.initializeOccurrences(),
+    builder: (context, snapshot) {
+      Widget widget = const Center(child: CircularProgressIndicator());
+      if(snapshot.connectionState == ConnectionState.done && snapshot.data != null && snapshot.data!.isNotEmpty) {
+        widget = _getMainWidget();
+      }
+      else if(snapshot.connectionState == ConnectionState.done && snapshot.data != null && snapshot.data!.isEmpty) {
+        widget = Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: 100,
+                child: Image.asset('assets/images/empty-lists/bad-habits.png')
+              ),
+              const SizedBox(height: 20),
+              Text(
+                'No bad habits data yet!',
+                style: Theme.of(context).textTheme.caption,
+              ),
+            ],
+          )
+        );
+      }
+      return widget;
+    }
   );
   
 }
