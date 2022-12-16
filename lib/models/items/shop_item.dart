@@ -1,6 +1,7 @@
+import 'package:rpg/models/items/inventory_item.dart';
 import 'package:rpg/models/items/item.dart';
 
-class ShopItem {
+abstract class ShopItem {
   final Item item;
   final int price;
   
@@ -8,4 +9,6 @@ class ShopItem {
     required this.item,
     required this.price
   });
+
+  InventoryItem toInventoryItem();
 }

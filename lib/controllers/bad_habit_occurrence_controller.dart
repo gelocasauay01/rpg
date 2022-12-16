@@ -156,4 +156,10 @@ class BadHabitOccurrenceController with ChangeNotifier {
     _badHabitNames = badHabitNames;
     return [..._occurrences];
   }
+  
+
+  void disposeOccurrences() {
+    _occurrences = [];
+    _badHabitNames = {};
+  }
 }

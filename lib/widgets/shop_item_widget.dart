@@ -91,9 +91,9 @@ class _ShopItemWidgetState extends State<ShopItemWidget> {
             bottomRight: Radius.circular(40.0)
           ),
           child: isSkinBought 
-          ? const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Text('Sold'),
+          ? Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text('Sold', style: Theme.of(context).textTheme.caption),
           ) 
           : ElevatedButton(
             onPressed: _buyItem,

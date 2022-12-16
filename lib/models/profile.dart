@@ -8,7 +8,7 @@ class Profile {
   Profile({
     required this.name,
     required this.imageUrl,
-    this.goldValue = 1000,
+    this.goldValue = 2000,
     this.healthValue = 20,
   });
 

@@ -110,97 +110,113 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     super.didChangeDependencies();
     if(widget._isEdit && !_isInit){
       ProfileController profileController = Provider.of<ProfileController>(context, listen: false);
-
-      if(profileController.profile != null){
-        _file = File(profileController.profile!.imageUrl);
-        _name = profileController.profile!.name;
-      }
-      
+      _file = File(profileController.profile.imageUrl);
+      _name = profileController.profile.name;
       _isInit = true;
     }
   }
 
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: Text(widget._isEdit ? 'Edit Character' : 'New Character'),
-    ),
-    body: Form(
-      key: _formState,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  _file != null 
-                  ? SizedBox(
-                      height: 200,
-                      width: 200,
-                      child: Image.file(
-                        _file!,
-                        fit: BoxFit.cover
-                      ),
-                    )
-                  : Container(
-                    height: 200,
-                    width: 200,
-                    decoration: BoxDecoration(border: Border.all()),
-                    child: const Center(child: Text("Choose an image")),
-                  ),
-                  
-                  Row(    
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        child: IconButton(
-                          onPressed: () => _pickImage(ImageSource.camera), 
-                          icon: const Icon(Icons.camera)
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: () => _pickImage(ImageSource.gallery), 
-                        icon: const Icon(Icons.browse_gallery)
-                      ),
-                    ],
-                  ),
-                  
-                  TextFormField(
-                    validator: _validateName,
-                    onSaved: (newValue) {
-                      _name = newValue;
-                    },
-                    initialValue: _name,
-                    decoration: const InputDecoration(
-                      labelText: "Name"
-                    ),
-                  ),
-                ],
-              ),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  ElevatedButton(
-                    onPressed: _saveProfile, 
-                    child: const Text("Save")
-                  ),
-                  if (widget._isEdit) ElevatedButton(
-                    onPressed: (){
-                      Navigator.of(context).pop();
-                    }, 
-                    child: const Text("Cancel")
-                  )
-                ],
-              )
-            ],
+  Widget _showPictureDisplay() =>  Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      _file != null 
+      ? SizedBox(
+          height: 200,
+          width: 200,
+          child: Image.file(
+            _file!,
+            fit: BoxFit.cover
           ),
         )
+      : Container(
+        height: 200,
+        width: 200,
+        decoration: BoxDecoration(border: Border.all()),
+        child: const Center(child: Text("Choose an image")),
       ),
+
+      Row(    
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            child: IconButton(
+              onPressed: () => _pickImage(ImageSource.camera), 
+              icon: const Icon(Icons.camera)
+            ),
+          ),
+          IconButton(
+            onPressed: () => _pickImage(ImageSource.gallery), 
+            icon: const Icon(Icons.browse_gallery)
+          ),
+        ]
+      )
+    ]
   );
+
+  Widget _showTextField() => TextFormField(
+    validator: _validateName,
+    onSaved: (newValue) {
+      _name = newValue;
+    },
+    initialValue: _name,
+    decoration: const InputDecoration(
+      labelText: "Name"
+    ),
+  );
+
+  Widget _displayButtons() => Row(
+    children: [
+      Expanded(
+        child: TextButton(
+          onPressed: _saveProfile, 
+          child: const Text("Save")
+        ),
+      ),
+      if (widget._isEdit) 
+      Expanded(
+        child: TextButton(
+          onPressed: (){
+            Navigator.of(context).pop();
+          }, 
+          child: const Text("Cancel")
+        ),
+      )
+    ],
+  );
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget._isEdit ? 'Edit Character' : 'New Character'),
+      ),
+      body: LayoutBuilder(
+        builder: (context, viewportConstraints) {
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: viewportConstraints.maxHeight,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Form(
+                  key: _formState,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        _showPictureDisplay(),
+                        _showTextField(),
+                        _displayButtons()
+                      ],
+                    ),
+                  ),
+                ),
+            ),
+          );
+        }
+      ),
+      );
+  }
   
 }

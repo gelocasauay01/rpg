@@ -3,10 +3,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 // Models
+import 'package:rpg/interface/item_user.dart';
 import 'package:rpg/models/items/skins.dart';
 import 'package:rpg/controllers/file_controller.dart';
 
-class ThemeController with ChangeNotifier {
+class ThemeController with ChangeNotifier implements ItemUser {
 
   final String _jsonId = 'SkinId';
   final String _fileName = 'theme.json';
@@ -38,6 +39,13 @@ class ThemeController with ChangeNotifier {
 
   Future<void> setSkin(String skinId) async {
     _activeSkinId = skinId;
+    await writeSkin();
+    notifyListeners();
+  }
+
+  @override
+  Future<void> useItem(dynamic newData) async {
+    _activeSkinId = newData;
     await writeSkin();
     notifyListeners();
   }

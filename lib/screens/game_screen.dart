@@ -52,7 +52,7 @@ class _GameScreenState extends State<GameScreen>{
       color: Theme.of(context).primaryColor,
       child: Column(
         children: [
-          Consumer<ProfileController>(builder: (context, value, child) => CharacterHeader(profile: value.profile!)),
+          Consumer<ProfileController>(builder: (context, value, child) => CharacterHeader(profile: value.profile)),
           if (currentPage == page_enum.Page.quests) const QuestScreen()
           else if (currentPage == page_enum.Page.profile) const ProfileScreen()
           else if (currentPage == page_enum.Page.shop) const ShopScreen()

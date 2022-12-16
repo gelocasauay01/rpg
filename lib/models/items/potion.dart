@@ -1,4 +1,3 @@
-import 'package:rpg/controllers/profile_controller.dart';
 import 'package:rpg/models/items/item.dart';
 
 class Potion extends Item{
@@ -12,9 +11,4 @@ class Potion extends Item{
     required super.imageUrl,
     this.healValue = 2
   });
-
-  void heal(ProfileController profileController) {
-    profileController.heal(healValue);
-  }
-
 }

@@ -37,7 +37,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
  
 
   Widget _showInventoryList() => Consumer<InventoryController>(
-    builder: (context, value, child) => value.items.isNotEmpty ? InventoryList(value.items) : child!,
+    builder: (context, value, child) => value.inventoryItems.isNotEmpty ? InventoryList(value.inventoryItems) : child!,
     child: const Center(child: Text('No items yet!')),
   );
   

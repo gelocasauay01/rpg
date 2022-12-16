@@ -136,6 +136,12 @@ class _BadHabitStatsWidgetState extends State<BadHabitStatsWidget> {
   );
 
   @override
+  void dispose() {
+    widget._badHabitOccurrenceController.disposeOccurrences();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) => FutureBuilder(
     future: widget._badHabitOccurrenceController.initializeOccurrences(),
     builder: (context, snapshot) {

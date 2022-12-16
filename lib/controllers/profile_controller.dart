@@ -5,23 +5,21 @@ import 'package:flutter/foundation.dart';
 // Models
 import 'package:rpg/models/profile.dart';
 import 'package:rpg/controllers/file_controller.dart';
+import 'package:rpg/interface/item_user.dart';
 
-class ProfileController with ChangeNotifier{
+class ProfileController with ChangeNotifier implements ItemUser{
   final String _fileName = 'profile.json';
   Profile? _profile; 
 
-  Profile? get profile {
-    return Profile(
-      imageUrl: _profile!.imageUrl,
-      name: _profile!.name,
-      healthValue: _profile!.healthValue,
-      goldValue: _profile!.goldValue,
-    );
-  }
+  Profile get profile => Profile(
+    imageUrl: _profile!.imageUrl,
+    name: _profile!.name,
+    healthValue: _profile!.healthValue,
+    goldValue: _profile!.goldValue,
+  );
+  
 
-  bool get isAlive {
-    return _profile!.isAlive;
-  }
+  bool get isAlive => _profile!.isAlive;
 
   Future<void> setProfile(Profile profile) async {
     _profile = profile;
@@ -54,12 +52,6 @@ class ProfileController with ChangeNotifier{
     notifyListeners();
   }
 
-  Future<void> heal(int healValue) async {
-    _profile!.heal(healValue);
-    await _writeProfile();
-    notifyListeners();
-  }
-
   Future<void> payGold(int paymentValue) async {
     _profile!.payGold(paymentValue);
     await _writeProfile();
@@ -71,26 +63,21 @@ class ProfileController with ChangeNotifier{
   }
 
   Future<bool> isNewGame() async {
-    bool isInit = false;
-
-    if(_profile == null) {
-      String? profileJSON = await FileController.readFile(_fileName);
-
-      if(profileJSON != null) {
-        _profile = Profile.fromJSON(jsonDecode(profileJSON));
-        isInit = true;
-      }
-      
-    } 
-
-    else {
-      isInit = true;
+    String? profileJSON = await FileController.readFile(_fileName);
+    if(_profile == null && profileJSON != null) {
+      _profile = Profile.fromJSON(jsonDecode(profileJSON));
     }
-
-    return isInit;
+    return _profile != null;
   }
 
-    Future<void> _writeProfile() async {
-    await FileController.writeFile(_fileName, jsonEncode(profile!.toJSON()));
+  Future<void> _writeProfile() async {
+    await FileController.writeFile(_fileName, jsonEncode(profile.toJSON()));
+  }
+
+  @override
+  Future<void> useItem(dynamic newValue) async {
+    _profile!.heal(newValue);
+    await _writeProfile();
+    notifyListeners();
   }
 }

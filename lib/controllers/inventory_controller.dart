@@ -3,92 +3,83 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 
 // Models
-import 'package:rpg/models/items/item.dart';
-import 'package:rpg/models/items/consumable_item.dart';
-import 'package:rpg/models/items/potion.dart';
+import 'package:rpg/interface/item_user.dart';
+import 'package:rpg/models/items/inventory_item.dart';
+import 'package:rpg/models/items/inventory_potion.dart';
+import 'package:rpg/models/items/inventory_skin.dart';
+import 'package:rpg/models/items/quantified_item.dart';
 import 'package:rpg/models/items/potions.dart';
-import 'package:rpg/models/items/skin.dart';
 import 'package:rpg/models/items/skins.dart';
 import 'package:rpg/controllers/file_controller.dart';
 
 class InventoryController with ChangeNotifier{
 
   final String _fileName = 'item.json';
-  List<Item> _items = [];
-
-  List<Item> get items => [..._items];
+  List<InventoryItem> _inventoryItems = [];
+  List<InventoryItem> get inventoryItems => [..._inventoryItems];
 
   Future<void> initializeItems() async {
     String? itemJSON = await FileController.readFile(_fileName);
-    List<Item> initialItems = [Skins.getSkinById(Skins.normalId)];
-    if(itemJSON != null) {
+    final List<InventoryItem> initialItems = [InventorySkin(skin: Skins.getSkinById(Skins.normalId))];
+    if(itemJSON != null && itemJSON.isNotEmpty) {
+      initialItems.clear();
       List<dynamic> itemsMap = jsonDecode(itemJSON);
-      initialItems = itemsMap.map((item) => item['Type'] == 'Consumable' 
-        ? ConsumableItem.fromPotion(potion: Potions.getPotionById(item['Id']), quantity: item['Quantity']) 
-        : Skins.getSkinById(item['Id'])).toList();
-    }
-    _items = initialItems;
+      if(itemsMap.isNotEmpty) {
+        for(Map map in itemsMap) {
+          switch(map['Type'] as String) {
+            case 'Skin':
+              initialItems.add(InventorySkin(skin: Skins.getSkinById(map['Id'])));
+              break;
+            case 'Potion':
+              initialItems.add(InventoryPotion(potion: Potions.getPotionById(map['Id']), quantity: map['Quantity']));
+              break;
+            default:
+              break;
+          }
+
+        }
+      }
+    } 
+    _inventoryItems = initialItems;
   }
 
-  Future<void> addItem(Item newItem) async {
-    int index = _items.indexWhere((item) => item.id == newItem.id);
-    bool isPotion = newItem is Potion;
-    
+  Future<void> addItem(InventoryItem newInventoryItem) async {
+    int index = _inventoryItems.indexWhere((inventoryItem) => inventoryItem.item.id == newInventoryItem.item.id);
     if(index == -1) {
-      if(isPotion) {
-        newItem = ConsumableItem.fromPotion(potion: newItem, quantity: 1);
-      }
-      _items.add(newItem);
-    } 
-
-    else if (isPotion){
-      ConsumableItem item = _items[index] as ConsumableItem;
-      item.incrementQuantity(1);
-      _items[index] = item;
+      _inventoryItems.add(newInventoryItem);
     }
-
+    else if(_inventoryItems[index] is QuantifiedItem) {
+      QuantifiedItem quantifiedItem = _inventoryItems[index] as QuantifiedItem;
+      quantifiedItem.setQuantity(quantifiedItem.quantity + 1);
+      _inventoryItems[index] = quantifiedItem;
+    }
     await _saveItems();
     notifyListeners();
   }
 
-  Future<void> decreaseConsumable(String itemId) async {
-    int index = _items.indexWhere((item) => item.id == itemId);
-
-    if(index == -1 || _items[index] is Skin) {
+  Future<void> useItem(String itemId, ItemUser itemUser) async {
+    int index = _inventoryItems.indexWhere((inventoryItem) => inventoryItem.item.id == itemId);
+    if(index == -1) {
       return;
     }
-
-    if(_items[index] is ConsumableItem) {
-      ConsumableItem item = _items[index] as ConsumableItem;
-      item.incrementQuantity(-1);
-      if(item.quantity <= 0) {
-        _items.removeAt(index);
+    await _inventoryItems[index].beUsed(itemUser);
+    if(_inventoryItems[index] is QuantifiedItem){
+      QuantifiedItem quantifiedItem = _inventoryItems[index] as QuantifiedItem;
+      if(quantifiedItem.quantity <= 0) {
+        _inventoryItems.removeAt(index);
       }
-    } 
-
+    }
     await _saveItems();
     notifyListeners();
   }
 
   bool isItemExist(String itemId) {
-    return _items.indexWhere((item) => item.id == itemId) != -1;
+    return _inventoryItems.indexWhere((inventoryItem) => inventoryItem.item.id == itemId) != -1;
   }
 
   Future<void> _saveItems() async {
-    List<Map<String, dynamic>> itemsMap = [];
-    List<Map<String, dynamic>> consumables = [];
-    List<Map<String, dynamic>> skins = [];
-
-    for(Item item in _items) {
-      if(item is ConsumableItem) {
-        consumables.add(item.toJSON());
-      }
-      else if(item is Skin){
-        skins.add(item.toJSON());
-      }
-    }
-    
-    itemsMap = [...consumables, ...skins];
+    List<Map<String,dynamic>> itemsMap = _inventoryItems.map((inventoryItem) => inventoryItem.toJSON()).toList();
     await FileController.writeFile(_fileName, jsonEncode(itemsMap));
   }
+
 }
