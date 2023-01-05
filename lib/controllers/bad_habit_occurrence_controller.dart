@@ -111,12 +111,12 @@ class BadHabitOccurrenceController with ChangeNotifier {
     occurrences.sort((current, next) => current.badHabitId.compareTo(next.badHabitId));
     for(BadHabitOccurrence occurrence in occurrences) {
       if(currentId != occurrence.badHabitId) {
-        currentId = occurrence.badHabitId;
         if(currentCount >= highestCount) {
           highestCount = currentCount;
           highestHabitId = currentId;
         }
         currentCount = 0;
+        currentId = occurrence.badHabitId;
       }
       currentCount += 1;
     }
