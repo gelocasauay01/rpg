@@ -16,11 +16,14 @@ class StatisticsItem extends StatelessWidget {
     child: Column(
       children: [
       Text(title),
-      Text(
-        content,
-        style: const TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 20
+      FittedBox(
+        fit: BoxFit.contain,
+        child: Text(
+          content,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 20
+          ),
         ),
       ),
       ],
